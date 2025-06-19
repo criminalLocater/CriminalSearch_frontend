@@ -1,53 +1,90 @@
-import React, { useEffect, useRef } from "react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import React, { useEffect, useState } from "react";
+import {
+  GoogleMap,
+  Marker,
+  InfoWindow,
+  useJsApiLoader,
+} from "@react-google-maps/api";
 
-// Fix for default marker icon
-import markerIcon from "leaflet/dist/images/marker-icon.png?url";
-import markerShadow from "leaflet/dist/images/marker-shadow.png?url";
+const containerStyle = {
+  width: "100%",
+  height: "500px",
+};
 
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
+// Barrackpore coordinates
+const center = {
+  lat: 22.6708,
+  lng: 88.3789,
+};
+
+const mapOptions = {
+  disableDefaultUI: false,
+  zoomControl: true,
+};
 
 const MapComponent = ({ selectedCriminal }) => {
-  const mapRef = useRef(null);
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: "AIzaSyC7BsqYETAovxlED4k57RZ7bUSWHF0E0As", // Replace with your key
+  });
+
+  const [map, setMap] = useState(null);
+  const [activeMarker, setActiveMarker] = React.useState(null);
+
+  const onUnmount = React.useCallback(() => {
+    setMap(null);
+  }, []);
 
   useEffect(() => {
-    if (!mapRef.current) {
-      const map = L.map("map").setView([22.6708, 88.3789], 13); // Barrackpore coordinates
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",  {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>', 
-      }).addTo(map);
-      mapRef.current = map;
-    }
-
-    // Clear existing markers
-    if (mapRef.current._layers) {
-      Object.values(mapRef.current._layers).forEach((layer) => {
-        if (layer instanceof L.Marker) {
-          layer.removeFrom(mapRef.current);
-        }
+    if (selectedCriminal && map) {
+      map.panTo({
+        lat: parseFloat(selectedCriminal.latitude),
+        lng: parseFloat(selectedCriminal.longitude),
       });
+      map.setZoom(15);
+      setActiveMarker(selectedCriminal);
     }
+  }, [selectedCriminal, map]);
 
-    // Add selected criminal's location
-    if (selectedCriminal && selectedCriminal.latitude && selectedCriminal.longitude) {
-      const marker = L.marker([
-        selectedCriminal.latitude,
-        selectedCriminal.longitude,
-      ])
-        .addTo(mapRef.current)
-        .bindPopup(`<b>${selectedCriminal.name}</b><br>${selectedCriminal.crime}`);
-      marker.openPopup();
-    }
-
-  }, [selectedCriminal]);
-
-  return <div id="map" style={{ height: "500px" }}></div>;
+  return isLoaded ? (
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={13}
+      onLoad={(map) => setMap(map)}
+      onUnmount={onUnmount}
+      options={mapOptions}
+    >
+      {/* Selected Criminal Marker */}
+      {selectedCriminal && (
+        <Marker
+          position={{
+            lat: parseFloat(selectedCriminal.latitude),
+            lng: parseFloat(selectedCriminal.longitude),
+          }}
+          onClick={() => setActiveMarker(selectedCriminal)}
+        >
+          {activeMarker && (
+            <InfoWindow
+              onCloseClick={() => setActiveMarker(null)}
+              position={{
+                lat: parseFloat(selectedCriminal.latitude),
+                lng: parseFloat(selectedCriminal.longitude),
+              }}
+            >
+              <div>
+                <strong>{selectedCriminal.name}</strong>
+                <br />
+                {selectedCriminal.crime}
+              </div>
+            </InfoWindow>
+          )}
+        </Marker>
+      )}
+    </GoogleMap>
+  ) : (
+    <div>Loading map...</div>
+  );
 };
 
 export default MapComponent;

@@ -2,11 +2,13 @@
 import React, { useState } from "react";
 import MapComponent from "../components/MapComponent";
 import CriminalList from "../components/CriminalList";
+import Service from "./Service";
 
 const Home = () => {
   const [selectedCriminal, setSelectedCriminal] = useState(null);
 
   return (
+    <main className="flex-grow overflow-y-auto p-4">
     <div className="min-h-screen bg-gray-100">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-blue-700 via-indigo-800 to-purple-900 text-white rounded-b-[4rem] overflow-hidden shadow-2xl h-64 md:h-96 flex items-center justify-center">
@@ -61,7 +63,12 @@ const Home = () => {
           </div>
         </div>
       </section>
+      {/* Services Section */}
+      <section className="px-4 pb-12 max-w-6xl mx-auto">
+        <Service />
+      </section>
     </div>
+    </main>
   );
 };
 
