@@ -48,10 +48,14 @@ const Login = () => {
 
       // Save token and user data to localStorage
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.data.role));
+      localStorage.setItem("user", JSON.stringify(response.data.data));
+      const user = JSON.parse(localStorage.getItem("user"));
+      console.log("User role:", user);
 
       // Redirect based on role
       const redirectPath = response.data.data.role === "admin" ? "/register" : "/";
+      if(user.role==="admin")navigate("/admin")
+      if(user.role==="sic")navigate("/sic")
 
       setTimeout(() => {
         navigate(redirectPath);

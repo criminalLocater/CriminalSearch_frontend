@@ -41,3 +41,9 @@
   color: #888;
 }
 @import "~leaflet/dist/leaflet.css";
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}

@@ -1,3 +1,4 @@
+
 // Base URL
 export const BASE_URL = "http://127.0.0.1:3000";
 
@@ -6,7 +7,8 @@ export const endpoint = {
     auth : {
         registration : 'api/user/register',
         login : 'api/user/login',
-        profile : 'api/user/edit/:id',
+        Profile : 'api/user/edit',
+        edit : 'api/user/edit/:id',
         updateProfile : 'api/user/update/:id',
         delete: 'api/user/delete/:id',
         showall: 'api/user/allUser',

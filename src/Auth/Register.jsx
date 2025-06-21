@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const Register = () => {
   const navigate = useNavigate();
 
-  // Form Data
+  // Form Data (including photo)
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -19,6 +19,10 @@ const Register = () => {
     designation: "",
     joiningDate: "",
   });
+
+  // Photo state
+  const [photo, setPhoto] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
 
   // Options for Select
   const [stations, setStations] = useState([]);
@@ -34,9 +38,6 @@ const Register = () => {
       try {
         const response = await axiosInstance.get(endpoint.station.showall);
         const data = response.data.data;
-
-        console.log("Fetched stations:", data);
-
         if (Array.isArray(data)) {
           setStations(data);
         } else {
@@ -50,7 +51,6 @@ const Register = () => {
         setLoading(false);
       }
     };
-
     fetchStations();
   }, []);
 
@@ -63,6 +63,37 @@ const Register = () => {
     }));
   };
 
+  // Handle Photo Upload with Preview
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        setErrors((prev) => ({
+          ...prev,
+          photo: "Only image files are allowed.",
+        }));
+        return;
+      }
+
+      // Set photo for upload
+      setPhoto(file);
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPhotoPreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+
+      // Clear error
+      setErrors((prev) => {
+        const { photo: _, ...rest } = prev;
+        return rest;
+      });
+    }
+  };
+
   // Validate Form
   const validateForm = () => {
     const newErrors = {};
@@ -73,7 +104,6 @@ const Register = () => {
     if (!formData.password) newErrors.password = "Password is required.";
     if (!formData.phone) newErrors.phone = "Phone number is required.";
     if (!formData.rank) newErrors.rank = "Rank is required.";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -81,13 +111,29 @@ const Register = () => {
   // Submit Form
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!validateForm()) return;
+
+    const formDataToSend = new FormData();
+    for (let key in formData) {
+      formDataToSend.append(key, formData[key]);
+    }
+
+    if (photo) {
+      formDataToSend.append("photo", photo);
+    }
 
     try {
       const response = await axiosInstance.post(
         endpoint.auth.registration,
-        formData
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
+
       console.log("Registration successful:", response.data);
       navigate("/login");
     } catch (error) {
@@ -228,32 +274,39 @@ const Register = () => {
               </div>
 
               {/* Station ID */}
-<div className="mb-4">
-  <label htmlFor="stationId" className="block text-sm font-medium text-gray-700 mb-1">
-    Police Station
-  </label>
-  <select
-    id="stationId"
-    name="stationId"
-    value={formData.stationId}
-    onChange={handleChange}
-    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-    disabled={loading}
-  >
-    <option value="">Select a Station</option>
-    {!loading && stations.length > 0 &&
-      stations.map((station) => (
-        <option key={station.id} value={station.id}>
-          {station.stationName}
-        </option>
-      ))
-    }
-    {!loading && stations.length === 0 && (
-      <option disabled>No stations found</option>
-    )}
-  </select>
-  {loading && <p className="text-gray-500 text-xs mt-1">Loading stations...</p>}
-</div>
+              <div className="mb-4">
+                <label
+                  htmlFor="stationId"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Police Station
+                </label>
+                <select
+                  id="stationId"
+                  name="stationId"
+                  value={formData.stationId}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={loading}
+                >
+                  <option value="">Select a Station</option>
+                  {!loading &&
+                    stations.length > 0 &&
+                    stations.map((station) => (
+                      <option key={station.id} value={station.id}>
+                        {station.stationName}
+                      </option>
+                    ))}
+                  {!loading && stations.length === 0 && (
+                    <option disabled>No stations found</option>
+                  )}
+                </select>
+                {loading && (
+                  <p className="text-gray-500 text-xs mt-1">
+                    Loading stations...
+                  </p>
+                )}
+              </div>
 
               {/* Phone */}
               <div className="mb-4">
@@ -357,6 +410,42 @@ const Register = () => {
                   onChange={handleChange}
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+              </div>
+
+              {/* Photo Upload with Preview */}
+              <div className="mb-4">
+                <label
+                  htmlFor="photo"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Profile Photo (Optional)
+                </label>
+                <input
+                  type="file"
+                  id="photo"
+                  name="photo"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${
+                    errors.photo
+                      ? "border-red-500 focus:ring-red-400"
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
+                />
+                {errors.photo && (
+                  <p className="text-red-500 text-xs mt-1">{errors.photo}</p>
+                )}
+
+                {/* Photo Preview */}
+                {photoPreview && (
+                  <div className="mt-3">
+                    <img
+                      src={photoPreview}
+                      alt="Preview"
+                      className="w-24 h-24 object-cover rounded-full border border-gray-300"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Submit Button */}
