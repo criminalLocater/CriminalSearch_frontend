@@ -11,7 +11,9 @@ import Register from "../Auth/Register";
 import AddPoliceStation from "../components/AddStation";
 import Login from "../Auth/Login";
 import ErrorBoundary from "../components/ErrorBoundary";
-
+import CriminalList from "../components/CriminalList";
+import CriminalPage from "../components/CriminalPage";
+import AddCriminalPage from "../components/AddCriminal";
 // Lazy-loaded Dashboards
 const AdminDashboard = React.lazy(() => import("../Dashboard/AdminDashboard"));
 const SicDashboard = React.lazy(() => import("../Dashboard/SicDashboard"));
@@ -25,78 +27,84 @@ function Routing() {
 
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow">
-          <ErrorBoundary>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/addstation" element={<AddPoliceStation />} />
-            <Route path="/service" element={<Service />} />
-            <Route path="/contact" element={<Contact />} />
+      <div className="app flex flex-col w-full min-h-screen bg-gray-50 text-gray-800 border-2 border-gray-950">
+        <div className="flex w-full flex-col min-h-screen border-2 border-amber-100">
+          <Header />
+          <main className=" w-full flex main-wrapper border-2 border-red-400">
+            <ErrorBoundary>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/addstation" element={<AddPoliceStation />} />
+              <Route path="/service" element={<Service />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/criminallist" element={<CriminalList />} />
+              <Route path="/criminalpage" element={<CriminalPage />} />
+              <Route path="/addcriminal" element={<AddCriminalPage />} />
 
-            {/* Protected Routes */}
-            <Route
-              path="/admin/*"
-              element={
-                user?.role === "admin" ? (
-                  <React.Suspense fallback="Loading...">
-                    <AdminDashboard />
-                  </React.Suspense>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
+              {/* Protected Routes */}
+              <Route
+                path="/admin/*"
+                element={
+                  user?.role === "admin" ? (
+                    <React.Suspense fallback="Loading...">
+                      <AdminDashboard />
+                    </React.Suspense>
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
 
-            <Route
-              path="/sic/*"
-              element={
-                ["admin", "sic"].includes(user?.role) ? (
-                  <React.Suspense fallback="Loading...">
-                    <SicDashboard />
-                  </React.Suspense>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
+              <Route
+                path="/sic/*"
+                element={
+                  ["admin", "sic"].includes(user?.role) ? (
+                    <React.Suspense fallback="Loading...">
+                      <SicDashboard />
+                    </React.Suspense>
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
 
-            <Route
-              path="/officer/*"
-              element={
-                ["officer", "sic", "admin"].includes(user?.role) ? (
-                  <React.Suspense fallback="Loading...">
-                    <OfficerDashboard />
-                  </React.Suspense>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
+              <Route
+                path="/officer/*"
+                element={
+                  ["officer", "sic", "admin"].includes(user?.role) ? (
+                    <React.Suspense fallback="Loading...">
+                      <OfficerDashboard />
+                    </React.Suspense>
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
 
-            <Route
-              path="/profile"
-              element={
-                ["officer", "sic", "admin"].includes(user?.role) ? (
-                  <React.Suspense fallback="Loading...">
-                    <Profile />
-                  </React.Suspense>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
+              <Route
+                path="/profile"
+                element={
+                  ["officer", "sic", "admin"].includes(user?.role) ? (
+                    <React.Suspense fallback="Loading...">
+                      <Profile />
+                    </React.Suspense>
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+              />
 
-            {/* Catch-all 404 */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-          </ErrorBoundary>
-        </main>
-        <Footer />
+              {/* Catch-all 404 */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+            </ErrorBoundary>
+          </main>
+          <Footer />
+        </div>
+
       </div>
     </Router>
   );
