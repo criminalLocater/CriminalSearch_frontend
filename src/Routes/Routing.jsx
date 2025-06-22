@@ -14,6 +14,7 @@ import ErrorBoundary from "../components/ErrorBoundary";
 import CriminalList from "../components/CriminalList";
 import CriminalPage from "../components/CriminalPage";
 import AddCriminalPage from "../components/AddCriminal";
+import ForgotPassword from "../components/ForgotPassword";
 // Lazy-loaded Dashboards
 const AdminDashboard = React.lazy(() => import("../Dashboard/AdminDashboard"));
 const SicDashboard = React.lazy(() => import("../Dashboard/SicDashboard"));
@@ -43,6 +44,7 @@ function Routing() {
               <Route path="/criminallist" element={<CriminalList />} />
               <Route path="/criminalpage" element={<CriminalPage />} />
               <Route path="/addcriminal" element={<AddCriminalPage />} />
+              <Route path="/forgotpassword" element={<ForgotPassword />} />
 
               {/* Protected Routes */}
               <Route

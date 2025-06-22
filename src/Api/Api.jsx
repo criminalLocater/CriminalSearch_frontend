@@ -12,6 +12,8 @@ export const endpoint = {
         updateProfile : 'api/user/update/:id',
         delete: 'api/user/delete/:id',
         showall: 'api/user/allUser',
+        forgotPassword: 'api/user/forgotpassword',
+        updatePassword: 'api/user/update-password/:token',
     },
     criminal:{
         create : 'api/criminals',
