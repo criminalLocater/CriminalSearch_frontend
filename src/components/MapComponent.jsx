@@ -11,7 +11,7 @@ const containerStyle = {
   height: "500px",
 };
 
-// Barrackpore coordinates
+// Barrackpore Police Station
 const center = {
   lat: 22.6708,
   lng: 88.3789,
@@ -22,24 +22,25 @@ const mapOptions = {
   zoomControl: true,
 };
 
-const MapComponent = ({ selectedCriminal }) => {
+const MapComponent = ({ selectedCriminal, criminals = [] }) => {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyC7BsqYETAovxlED4k57RZ7bUSWHF0E0As", // Replace with your key
+    googleMapsApiKey: "AIzaSyC7BsqYETAovxlED4k57RZ7bUSWHF0E0As",
   });
 
   const [map, setMap] = useState(null);
-  const [activeMarker, setActiveMarker] = React.useState(null);
+  const [activeMarker, setActiveMarker] = useState(null);
 
   const onUnmount = React.useCallback(() => {
     setMap(null);
   }, []);
 
+  // Pan to selected criminal
   useEffect(() => {
     if (selectedCriminal && map) {
       map.panTo({
-        lat: parseFloat(selectedCriminal.latitude),
-        lng: parseFloat(selectedCriminal.longitude),
+        lat: parseFloat(selectedCriminal.location?.coordinates[1]),
+        lng: parseFloat(selectedCriminal.location?.coordinates[0]),
       });
       map.setZoom(15);
       setActiveMarker(selectedCriminal);
@@ -55,32 +56,44 @@ const MapComponent = ({ selectedCriminal }) => {
       onUnmount={onUnmount}
       options={mapOptions}
     >
-      {/* Selected Criminal Marker */}
-      {selectedCriminal && (
+      {/* Police Station Marker */}
+      <Marker
+        position={center}
+        icon={{
+          url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png", 
+        }}
+        title="Barrackpore Police Station"
+      />
+
+      {/* All Criminal Markers */}
+      {criminals.map((criminal) => (
         <Marker
+          key={criminal._id}
           position={{
-            lat: parseFloat(selectedCriminal.latitude),
-            lng: parseFloat(selectedCriminal.longitude),
+            lat: parseFloat(criminal.location?.coordinates[1]),
+            lng: parseFloat(criminal.location?.coordinates[0]),
           }}
-          onClick={() => setActiveMarker(selectedCriminal)}
+          onClick={() => setActiveMarker(criminal)}
         >
-          {activeMarker && (
+          {activeMarker?._id === criminal._id && (
             <InfoWindow
               onCloseClick={() => setActiveMarker(null)}
               position={{
-                lat: parseFloat(selectedCriminal.latitude),
-                lng: parseFloat(selectedCriminal.longitude),
+                lat: parseFloat(criminal.location?.coordinates[1]),
+                lng: parseFloat(criminal.location?.coordinates[0]),
               }}
             >
-              <div>
-                <strong>{selectedCriminal.name}</strong>
+              <div className="p-2">
+                <strong>{criminal.name}</strong>
                 <br />
-                {selectedCriminal.crime}
+                Crime Type: {criminal.crimeType}
+                <br />
+                Status: {criminal.status}
               </div>
             </InfoWindow>
           )}
         </Marker>
-      )}
+      ))}
     </GoogleMap>
   ) : (
     <div>Loading map...</div>

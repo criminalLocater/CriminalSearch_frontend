@@ -6,12 +6,12 @@ import MapComponent from "../components/MapComponent";
 
 const SicDashboard = () => {
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-100 via-white to-blue-50">
+    <div className="w-full flex h-screen bg-gradient-to-br from-gray-100 via-white to-blue-50">
       {/* Sidebar */}
       <Sidebar role="sic" />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="w-full flex-1 flex flex-col overflow-hidden">
         {/* Scrollable Dashboard Content */}
         <main className="flex-1 p-6 overflow-auto">
           {/* Criminal Records Section */}

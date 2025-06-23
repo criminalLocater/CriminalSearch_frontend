@@ -1,27 +1,34 @@
 import React, { useEffect, useState } from "react";
+import axiosInstance from "../Api/AxiosInstance";
+import { endpoint } from "../Api/Api";
 
 const CriminalList = ({ onSelectCriminal }) => {
   const [criminals, setCriminals] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock data or fetch from API
-    setCriminals([
-      {
-        id: 1,
-        name: "John Doe",
-        crime: "Theft",
-        latitude: 22.6708,
-        longitude: 88.3789,
-      },
-      {
-        id: 2,
-        name: "Jane Smith",
-        crime: "Fraud",
-        latitude: 22.6758,
-        longitude: 88.3820,
-      },
-    ]);
+    const fetchNearbyCriminals = async () => {
+      try {
+        const res = await axiosInstance.get(endpoint.criminal.geo, {
+          params: {
+            lat: 22.6708,
+            lng: 88.3789,
+            radius: 5000,
+          },
+        });
+
+        if (res.data.success) {
+          setCriminals(res.data.data || []);
+        }
+      } catch (err) {
+        console.error("Error fetching criminals:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNearbyCriminals();
   }, []);
 
   const handleSelect = (criminal) => {
@@ -42,21 +49,27 @@ const CriminalList = ({ onSelectCriminal }) => {
         style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
       />
 
-      <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-        {filteredCriminals.map((criminal) => (
-          <li
-            key={criminal.id}
-            onClick={() => handleSelect(criminal)}
-            style={{
-              padding: "10px",
-              borderBottom: "1px solid #ccc",
-              cursor: "pointer",
-            }}
-          >
-            <strong>{criminal.name}</strong> - {criminal.crime}
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <p>Loading criminals...</p>
+      ) : filteredCriminals.length === 0 ? (
+        <p>No criminals found</p>
+      ) : (
+        <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+          {filteredCriminals.map((criminal) => (
+            <li
+              key={criminal._id}
+              onClick={() => handleSelect(criminal)}
+              style={{
+                padding: "10px",
+                borderBottom: "1px solid #ccc",
+                cursor: "pointer",
+              }}
+            >
+              <strong>{criminal.name}</strong> - {criminal.crimeType}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

@@ -6,9 +6,13 @@ import Service from "./Service";
 
 const Home = () => {
     const [selectedCriminal, setSelectedCriminal] = useState(null);
+    const [criminals, setCriminals] = useState([]);
+    const handleCriminalsLoaded = (data) => {
+        setCriminals(data);
+    };
 
     return (
-        <main className="w-full border-0 border-amber-500">
+        <main className="w-full">
             <div className="w-full p-4  min-h-screen bg-gray-100">
                 {/* Hero Section */}
                 <section className="relative bg-gradient-to-r from-blue-700 via-indigo-800 to-purple-900 text-white rounded-b-[4rem] overflow-hidden  shadow-2xl h-64 md:h-96 flex items-center justify-center">
@@ -64,6 +68,7 @@ const Home = () => {
                             <div className="h-[500px] w-full">
                                 <MapComponent
                                     selectedCriminal={selectedCriminal}
+                                    criminals={criminals}
                                 />
                             </div>
                         </div>
@@ -75,6 +80,7 @@ const Home = () => {
                             </h3>
                             <CriminalList
                                 onSelectCriminal={setSelectedCriminal}
+                                onCriminalsLoaded={handleCriminalsLoaded}
                             />
                         </div>
                     </div>
