@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar"; // Make sure this is the updated one
 import { FaBars } from "react-icons/fa";
+import { SiPacker } from "react-icons/si";
 
 const Header = () => {
     const [user] = useState(JSON.parse(localStorage.getItem("user")) || null);
@@ -183,7 +184,7 @@ const UserDropdown = ({ user, handleLogout }) => {
                 <div className="absolute right-0 mt-2 w-52 bg-white rounded-md shadow-lg z-10">
                     <div className="py-1">
                         <p className="px-4 py-2 text-sm font-medium text-gray-700 border-b truncate">
-                            {user.fullName}
+                            Hello! <span className="font-bold text-blue-600">{user.fullName}</span>
                         </p>
                         <a
                             href="/profile"

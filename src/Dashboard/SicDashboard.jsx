@@ -56,20 +56,29 @@ const SicDashboard = () => {
                 </button>
               </div>
 
-              {/* Criminal List */}
-              <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-                <CriminalList onSelectCriminal={setSelectedCriminal} criminals={criminals} />
-              </div>
+              
             </section>
 
-            {/* Map Section */}
-            <section>
-              <h3 className="text-xl font-semibold mb-2 text-gray-700">Criminal Location Map</h3>
-              <p className="text-sm text-gray-500 mb-4">Click on a criminal to view their location.</p>
-              <div className="h-96 w-full rounded-xl overflow-hidden shadow-lg border border-gray-300 bg-gray-200">
-                <MapComponent selectedCriminal={selectedCriminal} criminals={criminals} />
-              </div>
-            </section>
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+  {/* Criminal List */}
+  <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden flex flex-col h-[500px]">
+    <h3 className="text-xl font-semibold mb-4 text-gray-700 px-6 pt-6">Criminal List</h3>
+    <div className="px-6 pb-6 flex-1 overflow-y-auto">
+      <CriminalList onSelectCriminal={setSelectedCriminal} criminals={criminals} />
+    </div>
+  </div>
+
+  {/* Map */}
+  <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden flex flex-col h-[500px]">
+    <div className="px-6 pt-6">
+      <h3 className="text-xl font-semibold mb-2 text-gray-700">Criminal Location Map</h3>
+      <p className="text-sm text-gray-500 mb-4">Click on a criminal to view their location.</p>
+    </div>
+    <div className="flex-1 rounded-b-xl overflow-hidden shadow-lg border-t border-gray-100">
+      <MapComponent selectedCriminal={selectedCriminal} criminals={criminals} />
+    </div>
+  </div>
+</section>
           </main>
         )}
       </div>
