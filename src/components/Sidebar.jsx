@@ -16,8 +16,8 @@ const Sidebar = ({ role }) => {
         ];
       case "sic":
         return [
-          { name: "Add Criminal", path: "/sic/criminals/new" },
-          { name: "View Criminals", path: "/sic/criminals" },
+          { name: "Add Criminal", path: "/sic/addcriminal" },
+          { name: "View Criminals", path: "/sic/criminalpage" },
           { name: "Profile", path: "/profile" },
         ];
       case "officer":

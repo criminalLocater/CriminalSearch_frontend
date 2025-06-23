@@ -44,16 +44,10 @@ const Header = () => {
                                         Home
                                     </a>
                                     <a
-                                        href="/services"
+                                        href="/service"
                                         className="text-lg font-medium text-gray-900 hover:text-indigo-700"
                                     >
                                         Services
-                                    </a>
-                                    <a
-                                        href="/wanted"
-                                        className="text-lg font-medium text-gray-900 hover:text-indigo-700"
-                                    >
-                                        Wanted List
                                     </a>
                                     <a
                                         href="/contact"

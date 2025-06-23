@@ -61,11 +61,11 @@ function Routing() {
                                     element={<CriminalList />}
                                 />
                                 <Route
-                                    path="/criminalpage"
+                                    path="/sic/criminalpage"
                                     element={<CriminalPage />}
                                 />
                                 <Route
-                                    path="/addcriminal"
+                                    path="/sic/addcriminal"
                                     element={<AddCriminalPage />}
                                 />
                                 <Route

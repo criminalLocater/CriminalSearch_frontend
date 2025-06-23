@@ -1,10 +1,13 @@
-// src/pages/EditCriminalPage.jsx
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../Api/AxiosInstance";
 import { endpoint } from "../Api/Api";
 import { useNavigate, useParams } from "react-router-dom";
+import MapPicker from "../components/MapPicker";
 
 const EditCriminalPage = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+
   const [formData, setFormData] = useState({
     name: "",
     age: "",
@@ -17,10 +20,9 @@ const EditCriminalPage = () => {
     status: "Bail",
     photo: null,
   });
+
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState("");
   const [error, setError] = useState("");
-  const { id } = useParams();
-  const navigate = useNavigate();
 
   // Fetch current criminal data
   useEffect(() => {
@@ -29,21 +31,20 @@ const EditCriminalPage = () => {
         const response = await axiosInstance.get(endpoint.criminal.edit(id));
         const criminal = response.data.data;
 
-        // Set basic fields
+        // Set form data
         setFormData({
-          name: criminal.name,
-          age: criminal.age,
-          crimeType: criminal.crimeType,
-          address: criminal.address,
+          name: criminal.name || "",
+          age: criminal.age || "",
+          crimeType: criminal.crimeType || "",
+          address: criminal.address || "",
           caseNo: criminal.caseReference[0]?.caseNo || "",
           section: criminal.caseReference[0]?.section || "",
           longitude: criminal.location?.coordinates[0] || "",
           latitude: criminal.location?.coordinates[1] || "",
-          status: criminal.status,
+          status: criminal.status || "Bail",
           photo: null,
         });
 
-        // Set current photo URL if exists
         if (criminal.photo) {
           setCurrentPhotoUrl(criminal.photo);
         }
@@ -60,18 +61,25 @@ const EditCriminalPage = () => {
     const { name, value, files } = e.target;
     if (name === "photo") {
       setFormData({ ...formData, photo: files[0] });
-      setCurrentPhotoUrl(URL.createObjectURL(files[0])); // preview uploaded image
+      setCurrentPhotoUrl(URL.createObjectURL(files[0]));
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
+  const handleSelectLocation = ({ lat, lng }) => {
+    setFormData((prev) => ({
+      ...prev,
+      latitude: lat.toString(),
+      longitude: lng.toString(),
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate required fields
-    if (!formData.photo && !currentPhotoUrl) {
-      setError("Photo is required");
+    if (!formData.longitude || !formData.latitude) {
+      setError("Please select a valid location on the map.");
       return;
     }
 
@@ -119,11 +127,8 @@ const EditCriminalPage = () => {
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Edit Criminal</h2>
       {error && <p className="mb-4 text-red-500">{error}</p>}
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-md space-y-4"
-        encType="multipart/form-data"
-      >
+      <form onSubmit={handleSubmit} encType="multipart/form-data" className="bg-white p-6 rounded-lg shadow-md space-y-6">
+        {/* Name & Age */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             name="name"
@@ -142,6 +147,10 @@ const EditCriminalPage = () => {
             required
             className="px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+
+        {/* Crime Type & Address */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             name="crimeType"
             placeholder="Crime Type"
@@ -158,6 +167,10 @@ const EditCriminalPage = () => {
             required
             className="px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+
+        {/* Case No & Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             name="caseNo"
             placeholder="Case Number"
@@ -172,22 +185,37 @@ const EditCriminalPage = () => {
             onChange={handleChange}
             className="px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+
+        {/* Longitude & Latitude Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             name="longitude"
             placeholder="Longitude"
             value={formData.longitude}
             onChange={handleChange}
-            className="px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+            readOnly
+            className="px-4 py-2 border rounded bg-gray-100"
           />
           <input
             name="latitude"
             placeholder="Latitude"
             value={formData.latitude}
             onChange={handleChange}
-            className="px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+            readOnly
+            className="px-4 py-2 border rounded bg-gray-100"
           />
         </div>
 
+        {/* Map Picker */}
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Select Location on Map
+          </label>
+          <MapPicker onSelect={handleSelectLocation} />
+        </div>
+
+        {/* Status Dropdown */}
         <select
           name="status"
           value={formData.status}
@@ -198,7 +226,7 @@ const EditCriminalPage = () => {
           <option value="Jail">Jail</option>
         </select>
 
-        {/* Photo Preview */}
+        {/* Photo Upload */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Photo
@@ -220,6 +248,7 @@ const EditCriminalPage = () => {
           />
         </div>
 
+        {/* Submit Buttons */}
         <div className="flex justify-end gap-3 mt-4">
           <button
             type="button"

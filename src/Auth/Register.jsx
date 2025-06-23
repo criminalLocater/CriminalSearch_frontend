@@ -419,7 +419,7 @@ const Register = () => {
                   htmlFor="photo"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Profile Photo (Optional)
+                  Profile Photo
                 </label>
                 <input
                   type="file"

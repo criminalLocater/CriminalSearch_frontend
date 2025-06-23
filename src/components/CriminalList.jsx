@@ -1,69 +1,38 @@
-import React, { useEffect, useState } from "react";
-import axiosInstance from "../Api/AxiosInstance";
-import { endpoint } from "../Api/Api";
+import React, {  useState } from "react";
 
-const CriminalList = ({ onSelectCriminal }) => {
-  const [criminals, setCriminals] = useState([]);
+
+const CriminalList = ({ onSelectCriminal, criminals = [] }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchNearbyCriminals = async () => {
-      try {
-        const res = await axiosInstance.get(endpoint.criminal.geo, {
-          params: {
-            lat: 22.6708,
-            lng: 88.3789,
-            radius: 5000,
-          },
-        });
-
-        if (res.data.success) {
-          setCriminals(res.data.data || []);
-        }
-      } catch (err) {
-        console.error("Error fetching criminals:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNearbyCriminals();
-  }, []);
+  const filteredCriminals = criminals.filter((c) =>
+    c.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleSelect = (criminal) => {
     onSelectCriminal(criminal);
   };
 
-  const filteredCriminals = criminals.filter((c) =>
-    c.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <div>
+      {/* Search Input */}
       <input
         type="text"
         placeholder="Search by name..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+        className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none"
       />
 
-      {loading ? (
-        <p>Loading criminals...</p>
-      ) : filteredCriminals.length === 0 ? (
-        <p>No criminals found</p>
+      {/* Criminal List */}
+      {filteredCriminals.length === 0 ? (
+        <p className="text-center text-gray-500">No criminals found</p>
       ) : (
-        <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+        <ul className="space-y-2 max-h-[400px] overflow-y-auto">
           {filteredCriminals.map((criminal) => (
             <li
               key={criminal._id}
               onClick={() => handleSelect(criminal)}
-              style={{
-                padding: "10px",
-                borderBottom: "1px solid #ccc",
-                cursor: "pointer",
-              }}
+              className="p-3 border rounded-md cursor-pointer hover:bg-blue-50 transition"
             >
               <strong>{criminal.name}</strong> - {criminal.crimeType}
             </li>

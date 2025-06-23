@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 
+// Styles
 const containerStyle = {
   width: "100%",
   height: "400px",
@@ -12,40 +13,36 @@ const center = {
 };
 
 const options = {
-  disableDefaultUI: false,
+  disableDefaultUI: true,
   zoomControl: true,
 };
 
-const MapPicker = ({ coordinates, setCoordinates }) => {
+const MapPicker = ({ onSelect }) => {
   const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: "AIzaSyC7BsqYETAovxlED4k57RZ7bUSWHF0E0As", // Replace with your key
+    id: "google-map-script-for-picker",
+    googleMapsApiKey: "AIzaSyC7BsqYETAovxlED4k57RZ7bUSWHF0E0As", // Replace with real key
+    libraries: ["places"],
   });
 
-  const [markerPosition, setMarkerPosition] = useState(
-    coordinates[0] && coordinates[1]
-      ? { lat: coordinates[1], lng: coordinates[0] }
-      : center
-  );
+  const [markerPosition, setMarkerPosition] = useState(center);
 
   const onMapClick = (event) => {
-    const newCoords = {
-      lat: event.latLng.lat(),
-      lng: event.latLng.lng(),
-    };
-    setMarkerPosition(newCoords);
-    setCoordinates([newCoords.lng, newCoords.lat]);
+    const lat = event.latLng.lat();
+    const lng = event.latLng.lng();
+
+    setMarkerPosition({ lat, lng });
+    onSelect({ lat, lng }); // Send back to parent form
   };
 
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={markerPosition}
+      center={center}
       zoom={13}
       onClick={onMapClick}
       options={options}
     >
-      {markerPosition && <Marker position={markerPosition} />}
+      <Marker position={markerPosition} />
     </GoogleMap>
   ) : (
     <div>Loading map...</div>

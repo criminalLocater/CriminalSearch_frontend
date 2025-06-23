@@ -6,12 +6,13 @@ import {
   useJsApiLoader,
 } from "@react-google-maps/api";
 
+// Styles
 const containerStyle = {
   width: "100%",
   height: "500px",
 };
 
-// Barrackpore Police Station
+// Default Barrackpore Police Station location
 const center = {
   lat: 22.6708,
   lng: 88.3789,
@@ -23,65 +24,56 @@ const mapOptions = {
 };
 
 const MapComponent = ({ selectedCriminal, criminals = [] }) => {
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: "AIzaSyC7BsqYETAovxlED4k57RZ7bUSWHF0E0As",
-  });
-
   const [map, setMap] = useState(null);
   const [activeMarker, setActiveMarker] = useState(null);
 
-  const onUnmount = React.useCallback(() => {
-    setMap(null);
-  }, []);
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: "AIzaSyC7BsqYETAovxlED4k57RZ7bUSWHF0E0As", // Replace with real key
+  });
 
-  // Pan to selected criminal
+  // Pan to selected criminal when clicked
   useEffect(() => {
-    if (selectedCriminal && map) {
-      map.panTo({
-        lat: parseFloat(selectedCriminal.location?.coordinates[1]),
-        lng: parseFloat(selectedCriminal.location?.coordinates[0]),
-      });
-      map.setZoom(15);
-      setActiveMarker(selectedCriminal);
-    }
+    if (!map || !selectedCriminal) return;
+
+    const coords = selectedCriminal.location?.coordinates;
+    if (!coords || coords.length < 2) return;
+
+    const lat = parseFloat(coords[1]);
+    const lng = parseFloat(coords[0]);
+
+    if (isNaN(lat) || isNaN(lng)) return;
+
+    map.panTo({ lat, lng });
+    map.setZoom(15);
+    setActiveMarker(selectedCriminal);
   }, [selectedCriminal, map]);
 
-  return isLoaded ? (
-    <GoogleMap
-      mapContainerStyle={containerStyle}
-      center={center}
-      zoom={13}
-      onLoad={(map) => setMap(map)}
-      onUnmount={onUnmount}
-      options={mapOptions}
-    >
-      {/* Police Station Marker */}
-      <Marker
-        position={center}
-        icon={{
-          url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png", 
-        }}
-        title="Barrackpore Police Station"
-      />
+  // Render all criminal markers
+  const renderMarkers = () => {
+    return criminals.map((criminal) => {
+      const coords = criminal.location?.coordinates;
+      if (!coords || coords.length < 2) return null;
 
-      {/* All Criminal Markers */}
-      {criminals.map((criminal) => (
+      const lat = parseFloat(coords[1]);
+      const lng = parseFloat(coords[0]);
+
+      if (isNaN(lat) || isNaN(lng)) return null;
+
+      return (
         <Marker
           key={criminal._id}
-          position={{
-            lat: parseFloat(criminal.location?.coordinates[1]),
-            lng: parseFloat(criminal.location?.coordinates[0]),
-          }}
+          position={{ lat, lng }}
           onClick={() => setActiveMarker(criminal)}
+          icon={{
+            url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png", 
+            scaledSize: new window.google.maps.Size(30, 30),
+          }}
         >
           {activeMarker?._id === criminal._id && (
             <InfoWindow
               onCloseClick={() => setActiveMarker(null)}
-              position={{
-                lat: parseFloat(criminal.location?.coordinates[1]),
-                lng: parseFloat(criminal.location?.coordinates[0]),
-              }}
+              position={{ lat, lng }}
             >
               <div className="p-2">
                 <strong>{criminal.name}</strong>
@@ -93,7 +85,53 @@ const MapComponent = ({ selectedCriminal, criminals = [] }) => {
             </InfoWindow>
           )}
         </Marker>
-      ))}
+      );
+    });
+  };
+
+  return isLoaded ? (
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={13}
+      onLoad={(map) => setMap(map)}
+      onUnmount={() => setMap(null)}
+      options={mapOptions}
+    >
+      {/* Render all criminal markers */}
+      {renderMarkers()}
+
+      {/* Selected Criminal Marker (Optional duplicate or same as above) */}
+      {selectedCriminal && (
+        <Marker
+          position={{
+            lat: parseFloat(selectedCriminal.location?.coordinates[1]),
+            lng: parseFloat(selectedCriminal.location?.coordinates[0]),
+          }}
+          title={selectedCriminal.name}
+          icon={{
+            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", 
+            scaledSize: new window.google.maps.Size(40, 40),
+          }}
+          onClick={() => setActiveMarker(selectedCriminal)}
+        >
+          {activeMarker && (
+            <InfoWindow
+              onCloseClick={() => setActiveMarker(null)}
+              position={{
+                lat: parseFloat(selectedCriminal.location?.coordinates[1]),
+                lng: parseFloat(selectedCriminal.location?.coordinates[0]),
+              }}
+            >
+              <div className="p-2">
+                <strong>{selectedCriminal.name}</strong>
+                <br />
+                <small>Crime: {selectedCriminal.crimeType}</small>
+              </div>
+            </InfoWindow>
+          )}
+        </Marker>
+      )}
     </GoogleMap>
   ) : (
     <div>Loading map...</div>
