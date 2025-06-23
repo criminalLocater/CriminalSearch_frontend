@@ -15,6 +15,8 @@ const CriminalPage = () => {
   const fetchCriminals = async () => {
     try {
       const response = await axiosInstance.get(endpoint.criminal.showall);
+      console.log("Fetched criminals:", response.data.data);
+      
       setCriminals(response.data.data || []);
     } catch (err) {
       console.error("Error fetching criminals:", err);

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import axiosInstance from "../Api/AxiosInstance";
 import { endpoint } from "../Api/Api";
 import { useNavigate, useParams } from "react-router-dom";
-import MapPicker from "../components/MapPicker";
+const MapPicker= lazy(() => import("../components/MapPicker"))
 
 const EditCriminalPage = () => {
   const navigate = useNavigate();
@@ -212,7 +212,9 @@ const EditCriminalPage = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Select Location on Map
           </label>
-          <MapPicker onSelect={handleSelectLocation} />
+          <Suspense fallback="Loading map...">
+            <MapPicker onSelect={handleSelectLocation} />
+          </Suspense>
         </div>
 
         {/* Status Dropdown */}

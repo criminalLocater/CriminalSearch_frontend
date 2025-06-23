@@ -2,9 +2,13 @@ import React, { useState } from "react";
 import axiosInstance from "../Api/AxiosInstance";
 import { endpoint } from "../Api/Api";
 import { useNavigate } from "react-router-dom";
+
+// Don’t lazy load MapPicker unless you're having loader issues
 import MapPicker from "../components/MapPicker";
 
 const AddCriminalPage = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     age: "",
@@ -17,40 +21,46 @@ const AddCriminalPage = () => {
     status: "Bail",
     photo: null,
   });
-  const [Photo, setPhoto] = useState(null);
-    const [errors, setErrors] = useState({});
+
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [coordinates, setCoordinates] = useState([]);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
     if (name === "photo") {
-      setFormData({ ...formData, photo: files[0] });
+      const file = files[0];
+      setFormData({ ...formData, photo: file });
+
+      // Generate preview
+      if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setPhotoPreview(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setPhotoPreview(null);
+      }
+
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
 
-  const handleMapSelect = (coords) => {
-    // Update form inputs when user clicks on map
+  const handleMapSelect = ({ lat, lng }) => {
     setFormData((prev) => ({
       ...prev,
-      longitude: coords.lng,
-      latitude: coords.lat,
+      latitude: lat.toString(),
+      longitude: lng.toString(),
     }));
-    
-    // Update coordinates state for backend
-    setCoordinates([coords.lng, coords.lat]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.longitude || !formData.latitude) {
-      setError("Please select a location on the map.");
+    if (!formData.latitude || !formData.longitude) {
+      setError("Please select a valid location on the map.");
       return;
     }
 
@@ -59,17 +69,21 @@ const AddCriminalPage = () => {
     data.append("age", formData.age);
     data.append("crimeType", formData.crimeType);
     data.append("address", formData.address);
-    data.append("caseNo", formData.caseNo);
-    data.append("section", formData.section);
-    data.append("status", formData.status);
-    data.append("photo", formData.photo);
 
-    // Append location as GeoJSON string
+    data.append("caseReference[0][caseNo]", formData.caseNo);
+    data.append("caseReference[0][section]", formData.section);
+
     const location = {
       type: "Point",
       coordinates: [parseFloat(formData.longitude), parseFloat(formData.latitude)],
     };
     data.append("location", JSON.stringify(location));
+
+    data.append("status", formData.status);
+
+    if (formData.photo) {
+      data.append("photo", formData.photo);
+    }
 
     try {
       await axiosInstance.post(endpoint.criminal.create, data, {
@@ -83,35 +97,11 @@ const AddCriminalPage = () => {
       setError(err.response?.data?.message || "Failed to add criminal");
     }
   };
-  // Handle Photo Upload with Preview
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({
-          ...prev,
-          photo: "Only image files are allowed.",
-        }));
-        return;
-      }
-
-      // Set photo for upload
-      setPhoto(file);
-
-      // Create preview URL
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPhotoPreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   return (
     <div className="w-full p-6 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Add New Criminal</h2>
-      
+
       {error && <p className="mb-4 text-red-500">{error}</p>}
 
       <form onSubmit={handleSubmit} encType="multipart/form-data" className="bg-white p-6 rounded-lg shadow-md space-y-4">
@@ -174,8 +164,8 @@ const AddCriminalPage = () => {
           />
         </div>
 
-        {/* Latitude & Longitude (Hidden or Read-only) */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Longitude & Latitude */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             name="longitude"
             placeholder="Longitude"
@@ -195,8 +185,11 @@ const AddCriminalPage = () => {
         </div>
 
         {/* Map Picker */}
-        <div className="mt-4 border border-gray-300 rounded-md overflow-hidden shadow-md">
-          <MapPicker coordinates={coordinates} setCoordinates={setCoordinates} onSelect={handleMapSelect} />
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Select Location on Map
+          </label>
+          <MapPicker onSelect={handleMapSelect} />
         </div>
 
         {/* Status Dropdown */}
@@ -211,57 +204,39 @@ const AddCriminalPage = () => {
         </select>
 
         {/* Photo Upload with Preview */}
-              <div className="mb-4">
-                <label
-                  htmlFor="photo"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Profile Photo
-                </label>
-                <input
-                  type="file"
-                  id="photo"
-                  name="photo"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                  className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 ${
-                    errors.photo
-                      ? "border-red-500 focus:ring-red-400"
-                      : "border-gray-300 focus:ring-blue-500"
-                  }`}
-                />
-                {errors.photo && (
-                  <p className="text-red-500 text-xs mt-1">{errors.photo}</p>
-                )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Profile Photo
+          </label>
+          <input
+            name="photo"
+            type="file"
+            accept="image/*"
+            onChange={handleChange}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+              file:rounded file:border-0 file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
 
-                {/* Photo Preview */}
-                {photoPreview && (
-                  <div className="mt-3">
-                    <img
-                      src={photoPreview}
-                      alt="Preview"
-                      className="w-24 h-24 object-cover rounded-full border border-gray-300"
-                    />
-                  </div>
-                )}
-              </div>
-
-        {/* Submit / Cancel */}
-        <div className="flex justify-end gap-3 mt-6">
-          <button
-            type="button"
-            onClick={() => navigate("/criminalpage")}
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Save Criminal
-          </button>
+          {/* Image Preview */}
+          {photoPreview && (
+            <div className="mt-3 flex justify-center">
+              <img
+                src={photoPreview}
+                alt="Preview"
+                className="w-32 h-32 object-cover rounded border border-gray-300 shadow-sm"
+              />
+            </div>
+          )}
         </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full py-3 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Save Criminal
+        </button>
       </form>
     </div>
   );

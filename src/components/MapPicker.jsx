@@ -19,9 +19,9 @@ const options = {
 
 const MapPicker = ({ onSelect }) => {
   const { isLoaded } = useJsApiLoader({
-    id: "google-map-script-for-picker",
+    id: "google-map-script",
     googleMapsApiKey: "AIzaSyC7BsqYETAovxlED4k57RZ7bUSWHF0E0As", // Replace with real key
-    libraries: ["places"],
+    libraries: ["places", "maps", "marker"],
   });
 
   const [markerPosition, setMarkerPosition] = useState(center);
