@@ -146,6 +146,7 @@ const Register = () => {
 
   return (
     <>
+    <div className="w-full">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-700 via-indigo-800 to-purple-900 text-white py-12">
         <div className="container mx-auto px-4 text-center">
@@ -466,6 +467,8 @@ const Register = () => {
           </div>
         </div>
       </section>
+
+    </div>
     </>
   );
 };

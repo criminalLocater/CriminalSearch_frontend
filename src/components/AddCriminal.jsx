@@ -15,70 +15,106 @@ const AddCriminalPage = () => {
         longitude: "",
         latitude: "",
         status: "Bail",
+        photo: null,
     });
-    const [photo, setPhoto] = useState(null);
+    // const [photo, setPhoto] = useState(null);
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const { name, value, files } = e.target;
+        if (name === "photo") {
+            setFormData({ ...formData, photo: files[0] });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
         console.log("formData ", formData);
     };
 
     const handleSubmit = async (e) => {
-  e.preventDefault();
+        e.preventDefault();
 
-  // Validate coordinates
-  if (!formData.longitude || !formData.latitude) {
-    setError("Please enter both Longitude and Latitude.");
-    return;
-  }
+        // Validate coordinates
+        // if (!formData.longitude || !formData.latitude) {
+        //     setError("Please enter both Longitude and Latitude.");
+        //     return;
+        // }
 
-  const formDataToSend = new FormData();
+        // const formDataToSend = new FormData();
 
-  // Append all primitive fields
-  Object.entries(formData).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
-      formDataToSend.append(key, value);
-    }
-  });
+        // // Append all primitive fields
+        // Object.entries(formData).forEach(([key, value]) => {
+        //     if (value !== undefined && value !== null) {
+        //         formDataToSend.append(key, value);
+        //     }
+        // });
 
-  // Format and append location as JSON string
-  const location = {
-    type: "Point",
-    coordinates: [
-      parseFloat(formData.longitude),
-      parseFloat(formData.latitude),
-    ],
-  };
+        // // Format and append location as JSON string
+        // const location = {
+        //     type: "Point",
+        //     coordinates: [
+        //         parseFloat(formData.longitude),
+        //         parseFloat(formData.latitude),
+        //     ],
+        // };
 
-  formDataToSend.append("location", JSON.stringify(location));
+        // formDataToSend.append("location", JSON.stringify(location));
 
-  // Append photo if selected
-  if (photo) {
-    formDataToSend.append("photo", photo);
-  }
+        // // Append photo if selected
+        // if (photo) {
+        //     formDataToSend.append("photo", photo);
+        // }
 
-  // Log actual content of formDataToSend
-  for (let pair of formDataToSend.entries()) {
-    console.log(pair[0] + ": ", pair[1]);
-  }
+        // // Log actual content of formDataToSend
+        // for (let pair of formDataToSend.entries()) {
+        //     console.log(pair[0] + ": ", pair[1]);
+        // }
+        // Build caseReference array
+        const caseReference = [
+            {
+                caseNo: formData.caseNo,
+                section: formData.section,
+            },
+        ];
+        // Build location object
+        const location = {
+            type: "Point",
+            coordinates: [
+                parseFloat(formData.longitude),
+                parseFloat(formData.latitude),
+            ],
+        };
+        // Create FormData object
+        const data = new FormData();
+        data.append("name", formData.name);
+        data.append("age", formData.age);
+        data.append("crimeType", formData.crimeType);
+        data.append("address", formData.address);
+        data.append("caseReference[0][caseNo]", formData.caseNo);
+        data.append("caseReference[0][section]", formData.section);
+        data.append("location", JSON.stringify(location)); // stringify GeoJSON
+        data.append("status", formData.status);
+        data.append("photo", formData.photo); // append the file
 
-  try {
-    await axiosInstance.post(endpoint.criminal.create, formDataToSend, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+        // Log actual content of FormData
+        console.log("FormData Contents:");
+        for (let pair of data.entries()) {
+            console.log(pair[0] + ": ", pair[1]);
+        }
+        try {
+            await axiosInstance.post(endpoint.criminal.create, data, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
 
-    // navigate("/criminalpage");
-  } catch (err) {
-    setError(err.response?.data?.message || "Failed to add criminal");
-  }
-};
+            navigate("/criminalpage");
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to add criminal");
+        }
+    };
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="w-full p-6 bg-gray-100 min-h-screen">
             <h2 className="text-2xl font-bold mb-6 text-gray-800">
                 Add New Criminal
             </h2>
@@ -176,9 +212,11 @@ const AddCriminalPage = () => {
                         Photo
                     </label>
                     <input
+                        name="photo"
                         type="file"
                         accept="image/*"
-                        onChange={(e) => setPhoto(e.target.files[0])}
+                        onChange={handleChange}
+                        // onChange={(e) => setPhoto(e.target.files[0])}
                         className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
               file:rounded file:border-0 file:text-sm file:font-semibold
               file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
