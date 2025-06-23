@@ -102,6 +102,11 @@ const CriminalPage = () => {
                           </span>
                         </td>
                         <td className="py-4 px-6 whitespace-nowrap text-sm text-gray-700 flex justify-end space-x-2">
+                          <button>
+                            <Link to={`/viewcriminal/${criminal._id}`} className="text-blue-600 hover:text-blue-900">
+                              View
+                            </Link>
+                          </button>
                           <button
                             onClick={() => window.location.href = `/editcriminal/${criminal._id}`}
                             className="text-blue-600 hover:text-blue-900"
