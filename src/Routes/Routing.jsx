@@ -23,6 +23,7 @@ import ForgotPassword from "../components/ForgotPassword";
 import ResetPassword from "../components/ResetPassword";
 import EditCriminalPage from "../components/EditCriminal";
 import ViewCriminal from "../components/ViewCriminal";
+import UserTable from "../components/UserTable";
 // Lazy-loaded Dashboards
 const AdminDashboard = React.lazy(() => import("../Dashboard/AdminDashboard"));
 const SicDashboard = React.lazy(() => import("../Dashboard/SicDashboard"));
@@ -85,6 +86,7 @@ function Routing() {
                                     path="/viewcriminal/:id"
                                     element={<ViewCriminal />}
                                 />
+                               
 
                                 {/* Protected Routes */}
                                 <Route

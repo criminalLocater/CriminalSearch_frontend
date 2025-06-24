@@ -1,6 +1,7 @@
 import React from "react";
 import Sidebar from "../components/Sidebar";
 import { Navigate } from "react-router-dom";
+import UserTable from "../components/UserTable";
 //import UserTable from "../components/UserTable";
 
 const AdminDashboard = () => {
@@ -34,6 +35,7 @@ const AdminDashboard = () => {
             <div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6 border border-gray-200">
               <h2 className="text-2xl font-bold mb-4 text-gray-800">User Management</h2>
               {/* <UserTable /> */}
+              <UserTable/>
             </div>
 
             {/* Right Column - Quick Actions */}
