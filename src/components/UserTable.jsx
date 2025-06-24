@@ -238,7 +238,7 @@ setSelectedUser({
                   className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   disabled={loading}
                 >
-                  
+                  <option value="">Select a station</option>
                   {!loading &&
                     stations.length > 0 &&
                     stations.map((station) => (
