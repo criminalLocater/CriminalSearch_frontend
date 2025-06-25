@@ -23,10 +23,10 @@ export const endpoint = {
         geo: "api/criminals/geo/nearby",
     },
     station: {
-        create: "api/station/create-station",
-        showall: "api/station/all-stations",
-        edit: "api/station/edit/:id",
-        update: "api/station/update/:id",
-        delete: "api/station/delete/:id",
+        create: "/api/station/create-station",
+        showall: "/api/station/all-stations",
+        edit: (id) => `/api/station/edit/${id}`,
+        update: (id) => `/api/station/update/${id}`,
+        delete: (id) => `/api/station/delete/${id}`,
     },
 };

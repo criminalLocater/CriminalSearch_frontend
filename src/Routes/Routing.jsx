@@ -24,6 +24,10 @@ import ResetPassword from "../components/ResetPassword";
 import EditCriminalPage from "../components/EditCriminal";
 import ViewCriminal from "../components/ViewCriminal";
 import UserTable from "../components/UserTable";
+import StationListPage from "../components/StationList";
+import ViewStation from "../components/ViewStation";
+import EditStationPage from "../components/EditStation";
+
 // Lazy-loaded Dashboards
 const AdminDashboard = React.lazy(() => import("../Dashboard/AdminDashboard"));
 const SicDashboard = React.lazy(() => import("../Dashboard/SicDashboard"));
@@ -86,7 +90,18 @@ function Routing() {
                                     path="/viewcriminal/:id"
                                     element={<ViewCriminal />}
                                 />
-                               
+                                <Route
+                                    path="/admin/stations"
+                                    element={<StationListPage />}
+                                />
+                                <Route
+                                    path="/view-station/:id"
+                                    element={<ViewStation />}
+                                />
+                                <Route
+                                    path="/edit-station/:id"
+                                    element={<EditStationPage />}
+                                />
 
                                 {/* Protected Routes */}
                                 <Route

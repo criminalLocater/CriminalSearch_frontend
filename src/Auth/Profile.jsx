@@ -56,18 +56,18 @@ const Profile = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-lg mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">User Profile</h1>
 
       {/* Profile Card */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+      <div className="w-full bg-white shadow rounded-lg p-6 border-2">
+        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 border-2">
           {/* Profile Photo */}
           <div className="relative">
             <img
               src={user?.photo ? user.photo : "https://via.placeholder.com/150"} 
               alt="Profile"
-              className="w-32 h-32 object-cover rounded-full border-2 border-indigo-500"
+              className="w-32 h-32 object-cover rounded-full"
             />
             {editMode && (
               <label className="absolute bottom-0 right-0 bg-indigo-600 text-white p-2 rounded-full cursor-pointer text-xs">
@@ -161,7 +161,7 @@ const Profile = () => {
                 </div>
               </form>
             ) : (
-              <div className="space-y-4">
+              <div className="w-full space-y-4 border-2 border-red-500">
                 <div>
                   <p className="text-sm text-gray-500">Full Name</p>
                   <p className="font-semibold">{user.fullName || "Not provided"}</p>
