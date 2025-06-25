@@ -23,10 +23,10 @@ import ForgotPassword from "../components/ForgotPassword";
 import ResetPassword from "../components/ResetPassword";
 import EditCriminalPage from "../components/EditCriminal";
 import ViewCriminal from "../components/ViewCriminal";
-import UserTable from "../components/UserTable";
 import StationListPage from "../components/StationList";
 import ViewStation from "../components/ViewStation";
 import EditStationPage from "../components/EditStation";
+import ChangePassword from "../components/ChangePassword";
 
 // Lazy-loaded Dashboards
 const AdminDashboard = React.lazy(() => import("../Dashboard/AdminDashboard"));
@@ -81,6 +81,10 @@ function Routing() {
                                 <Route
                                     path="/reset-password/:token"
                                     element={<ResetPassword />}
+                                />
+                                <Route
+                                    path="/change-password/:userId"
+                                    element={<ChangePassword />}
                                 />
                                 <Route
                                     path="/editcriminal/:id"

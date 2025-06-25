@@ -65,6 +65,7 @@ const Login = () => {
             setTimeout(() => {
                 navigate(redirectPath);
                 alert("Login successful!");
+                window.location.reload();
             }, 1000);
         } catch (error) {
             const errorMsg =
@@ -243,17 +244,7 @@ const Login = () => {
                                 >
                                     {loading ? "Logging in..." : "Login"}
                                 </button>
-                            </form>
-
-                            <p className="mt-6 text-center text-sm text-gray-600">
-                                Don't have an account?{" "}
-                                <a
-                                    href="/register"
-                                    className="text-blue-600 hover:underline"
-                                >
-                                    Register
-                                </a>
-                            </p>
+                            </form> 
                         </div>
                     </div>
                 </section>

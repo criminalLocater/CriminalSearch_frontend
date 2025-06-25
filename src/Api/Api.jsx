@@ -13,6 +13,7 @@ export const endpoint = {
         showall: "api/user/allUser",
         forgotPassword: "api/user/forgotpassword",
         updatePassword: "api/user/update-password/",
+        changePassword: "api/user/change-password/",
     },
     criminal: {
         create: "api/criminals/create",

@@ -158,6 +158,10 @@ const Header = () => {
 
 // User Dropdown Component
 const UserDropdown = ({ user, handleLogout }) => {
+    const User=JSON.parse(localStorage.getItem("user"));
+    const id=User._id;
+    console.log("User:", User._id);
+    
     const [open, setOpen] = useState(false);
 
     return (
@@ -204,8 +208,17 @@ const UserDropdown = ({ user, handleLogout }) => {
                         >
                             Dashboard
                         </a>
+                        <a
+                            href={`/change-password/${id}`}
+                            className="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                        >
+                            Change Password
+                        </a>
                         <button
-                            onClick={handleLogout}
+                            onClick={() => {
+                                handleLogout();
+                                window.location.reload();
+                            }}
                             className="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
                         >
                             Logout
