@@ -58,7 +58,7 @@ const Login = () => {
 
             // Redirect based on role
             const redirectPath =
-                response.data.data.role === "admin" ? "/register" : "/";
+                response.data.data.role === "admin" ? "/admin" : "/";
             if (user.role === "admin") navigate("/admin");
             if (user.role === "sic") navigate("/sic");
 
