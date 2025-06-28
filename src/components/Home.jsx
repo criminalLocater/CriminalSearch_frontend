@@ -77,7 +77,7 @@ const Home = () => {
                         </p>
                     </div>
                 </section>
-                {user ? (
+                {user?.role === "sic" || user?.role === "officer" ? (
                     <>
                         {/* Map + Criminal List Grid */}
                         {loading ? (

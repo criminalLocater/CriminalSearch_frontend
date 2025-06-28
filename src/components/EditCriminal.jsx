@@ -101,6 +101,8 @@ const EditCriminalPage = () => {
       },
     ];
 
+    formData.caseReference = caseReference;
+
     const location = {
       type: "Point",
       coordinates: [parseFloat(formData.longitude), parseFloat(formData.latitude)],

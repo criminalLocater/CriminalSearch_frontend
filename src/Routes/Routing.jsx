@@ -31,6 +31,8 @@ import CriminalList from "../components/CriminalList";
 import StationListPage from "../components/StationList";
 import ViewStation from "../components/ViewStation";
 import EditStationPage from "../components/EditStation";
+import ContactDashboard from "../components/ContactsDashboard";
+import ViewContact from "../components/ViewContact";
 
 // Lazy-loaded Dashboards
 const AdminDashboard = React.lazy(() => import("../Dashboard/AdminDashboard"));
@@ -216,7 +218,31 @@ function Routing() {
                     )
                   }
                 />
-
+                {/* Contact Dashboard for Admin */}
+                <Route
+                  path="/contactdashboard"
+                  element={
+                    ["admin"].includes(user?.role) ? (
+                      <Suspense fallback="Loading...">
+                        <ContactDashboard />
+                      </Suspense>
+                    ) : (
+                      <Navigate to="/login" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/admin/contact/viewcontact/:id"
+                  element={
+                    ["admin"].includes(user?.role) ? (
+                      <Suspense fallback="Loading...">
+                        <ViewContact />
+                      </Suspense>
+                    ) : (
+                      <Navigate to="/login" replace />
+                    )
+                  }
+                />
                 {/* Redirect if no match */}
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>

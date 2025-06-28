@@ -103,7 +103,7 @@ const AddCriminalPage = () => {
     };
 
     return (
-        <div className="w-full p-6 bg-gray-100 min-h-screen">
+        <div className="w-full h-full p-6 bg-gray-100">
             <h2 className="text-2xl font-bold mb-6 text-gray-800">
                 Add New Criminal
             </h2>
@@ -195,16 +195,20 @@ const AddCriminalPage = () => {
                 </div>
 
                 {/* Map Picker */}
-                <div className="mt-4">
+                <div className="mt-4" style={{ width: "100%", height: "400px", position: "relative", overflow: "hidden", borderRadius: "0.375rem" }}>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Select Location on Map
                     </label>
-                    <MapPicker onSelect={handleMapSelect} />
+                    <MapPicker style={{ width: "100%", height: "100%" }} onSelect={handleMapSelect} />
                 </div>
 
                 {/* Status Dropdown */}
-                <select
-                    name="status"
+                <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Status
+                    </label>
+                    <select
+                        name="status"
                     value={formData.status}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
@@ -212,7 +216,7 @@ const AddCriminalPage = () => {
                     <option value="Bail">Bail</option>
                     <option value="Jail">Jail</option>
                 </select>
-
+                </div>
                 {/* Photo Upload with Preview */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -243,7 +247,7 @@ const AddCriminalPage = () => {
                 {/* Submit Button */}
                 <button
                     type="submit"
-                    className="w-full py-3 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className=" py-3 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
                     Save Criminal
                 </button>

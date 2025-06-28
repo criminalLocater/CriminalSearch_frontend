@@ -30,4 +30,11 @@ export const endpoint = {
         update: (id) => `/api/station/update/${id}`,
         delete: (id) => `/api/station/delete/${id}`,
     },
+    contact:{
+        create: "api/contact/create",
+        showall: "api/contact/list",
+        edit: "/api/contact/edit/",
+        update: (id) => `/api/contact/update/${id}`,
+        delete: "/api/contact/delete/",
+    }
 };

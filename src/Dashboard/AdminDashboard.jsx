@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import UserTable from "../components/UserTable";
 import StationListPage from "../components/StationList";
 import Profile from "../Auth/Profile";
+import ContactDashboard from "../components/ContactsDashboard";
 //import UserTable from "../components/UserTable";
 
 const AdminDashboard = () => {
@@ -53,10 +54,29 @@ const AdminDashboard = () => {
                             </p>
                         </div>
                     ))}
+                    <div className="space-y-4">
+                            <button
+                                className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition duration-200"
+                                onClick={() =>
+                                    window.location.replace("/register")
+                                }
+                            >
+                                Add New Officer
+                            </button>
+                            <button
+                                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200"
+                                onClick={() =>
+                                    window.location.replace("/addstation")
+                                }
+                            >
+                                Register New Station
+                            </button>
+                            
+                        </div>
                 </div>
 
                 {/* Dashboard Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
                     {/* Left Column - User Management */}
                     <div className="order-2 lg:order-1 md:col-span-2 bg-white rounded-xl shadow-md p-6 border border-gray-200">
                         {/* Conditional Rendering Based on isActiveTab */}
@@ -76,6 +96,12 @@ const AdminDashboard = () => {
                                 <StationListPage />
                             </div>
                         )}
+                        {isActiveTab === "contactdashboard" && (
+                            <div>
+                              
+                                <ContactDashboard />
+                            </div>
+                        )}{" "}
                         {isActiveTab === "profile" && (
                             <div>
                               
@@ -85,30 +111,14 @@ const AdminDashboard = () => {
                     </div>
 
                     {/* Right Column - Quick Actions */}
-                    <div className="order-1 md:order-2 bg-white rounded-xl shadow-md p-6 border border-gray-200 space-y-6">
+
+                    </div>
+                                        <div className="order-1 md:order-2 bg-white rounded-xl shadow-md p-6 border border-gray-200 space-y-6">
                         <h2 className="text-xl font-bold text-gray-800">
                             Quick Actions
                         </h2>
 
-                        <div className="space-y-4">
-                            <button
-                                className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition duration-200"
-                                onClick={() =>
-                                    window.location.replace("/register")
-                                }
-                            >
-                                Add New Officer
-                            </button>
-                            <button
-                                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200"
-                                onClick={() =>
-                                    window.location.replace("/addstation")
-                                }
-                            >
-                                Register New Station
-                            </button>
-                            
-                        </div>
+                        
 
                         {/* Recent Activity */}
                         <div>
@@ -146,7 +156,6 @@ const AdminDashboard = () => {
                             </div>
                         </div>
                     </div>
-                </div>
             </main>
         </div>
     );

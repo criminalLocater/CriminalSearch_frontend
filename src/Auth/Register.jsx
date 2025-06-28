@@ -142,7 +142,7 @@ const Register = () => {
 
             console.log("Registration successful:", response.data);
             setTimeout(() => {
-                navigate(redirectPath);
+                navigate("/admin");
                 if (response.data.status === 200) {
                     toast.success("Registration Successfull");
                 }
@@ -490,16 +490,6 @@ const Register = () => {
                                     Register
                                 </button>
                             </form>
-
-                            <p className="mt-4 text-center text-sm text-gray-600">
-                                Already have an account?{" "}
-                                <a
-                                    href="/login"
-                                    className="text-blue-600 hover:underline"
-                                >
-                                    Login
-                                </a>
-                            </p>
                         </div>
                     </div>
                 </section>

@@ -149,14 +149,14 @@ const UserTable = () => {
     return (
         <div className="overflow-x-auto">
             {/* Users Table */}
-            <table className="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+            <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-100">
                     <tr>
-                        <th className="py-3 px-4 border-b text-left">Name</th>
-                        <th className="py-3 px-4 border-b text-left">Email</th>
-                        <th className="py-3 px-4 border-b text-left">Police Station</th>
-                        <th className="py-3 px-4 border-b text-left">Role</th>
-                        <th className="py-3 px-4 border-b text-right">Actions</th>
+                        <th className="py-3 px-4  text-left">Name</th>
+                        <th className="py-3 px-4  text-left">Email</th>
+                        <th className="py-3 px-4  text-left">Police Station</th>
+                        <th className="py-3 px-4  text-left">Role</th>
+                        <th className="py-3 px-4  text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -169,11 +169,11 @@ const UserTable = () => {
                     )}
                     {users.map((user) => (
                         <tr key={user.id} className="hover:bg-gray-50 transition">
-                            <td className="py-4 px-4 border-b">{user.fullName}</td>
-                            <td className="py-4 px-4 border-b">{user.email}</td>
-                            <td className="py-4 px-4 border-b">{user.stationId || "-"}</td>
-                            <td className="py-4 px-4 border-b capitalize">{user.role}</td>
-                            <td className="py-4 px-4 border-b text-right space-x-2">
+                            <td className="py-4 px-4 ">{user.fullName}</td>
+                            <td className="py-4 px-4 ">{user.email}</td>
+                            <td className="py-4 px-4 ">{user.stationId || "-"}</td>
+                            <td className="py-4 px-4 capitalize">{user.role}</td>
+                            <td className="py-4 px-4 text-center space-x-2">
                                 <button
                                     onClick={() => handleEdit(user)}
                                     className="text-blue-600 hover:text-blue-800"

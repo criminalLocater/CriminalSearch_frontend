@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar"; // Make sure this is the updated one
 import { FaBars } from "react-icons/fa";
-import { SiPacker } from "react-icons/si";
 
 const Header = () => {
     const [user] = useState(JSON.parse(localStorage.getItem("user")) || null);
@@ -192,6 +191,7 @@ const UserDropdown = ({ user, handleLogout }) => {
                         </a>
                         <button
                             onClick={() => {
+                                setOpen(false);
                                 handleLogout();
                                 window.location.reload();
                             }}

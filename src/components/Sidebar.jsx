@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 
+
 const Sidebar = ({ role, handleActiveTab, isActiveTab }) => {
     const [isOpen, setIsOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
@@ -39,13 +40,14 @@ const Sidebar = ({ role, handleActiveTab, isActiveTab }) => {
                 baseLinks.push(
                     { name: "Manage Users", tab: "manageusers" },
                     { name: "Manage Stations", tab: "managestations" },
-                    { name: "Profile", tab: "profile" }
+                    { name: "Contact Messages", tab: "contactdashboard" },
+                    { name: "Profile", tab: "profile" },
                 );
                 break;
             case "sic":
                 baseLinks.push(
-                    { name: "Add Criminal", tab: "addcriminal" },
-                    { name: "View Criminals", tab: "criminalpage" },
+                    { name: "View Criminal", tab: "sic" },
+                    { name: "Manage Criminals", tab: "criminalpage" },
                     { name: "Profile", tab: "profile" }
                 );
                 break;
