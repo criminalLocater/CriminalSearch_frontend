@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axiosInstance from "../Api/AxiosInstance";
 import { endpoint } from "../Api/Api";
-``;
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -64,13 +64,16 @@ const Login = () => {
 
             setTimeout(() => {
                 navigate(redirectPath);
-                alert("Login successful!");
+                if (response.data.status === 200) {
+                    toast.success("Login Successfull");
+                }
                 window.location.reload();
             }, 1000);
         } catch (error) {
             const errorMsg =
                 error.response?.data?.message ||
                 "An error occurred during login.";
+                toast.error("Invalid Credentials");
             setSubmitError(errorMsg);
         } finally {
             setLoading(false);
@@ -244,7 +247,7 @@ const Login = () => {
                                 >
                                     {loading ? "Logging in..." : "Login"}
                                 </button>
-                            </form> 
+                            </form>
                         </div>
                     </div>
                 </section>

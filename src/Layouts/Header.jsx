@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar"; // Make sure this is the updated one
 import { FaBars } from "react-icons/fa";
@@ -6,8 +6,7 @@ import { SiPacker } from "react-icons/si";
 
 const Header = () => {
     const [user] = useState(JSON.parse(localStorage.getItem("user")) || null);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [sidebarOpen, setSidebarOpen] = useState(false); // For drawer sidebar
+    const [sidebarOpen, setSidebarOpen] = useState(false); // Unified state for sidebar
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -15,44 +14,42 @@ const Header = () => {
         localStorage.removeItem("user");
         navigate("/");
     };
-
     return (
         <>
             {/* Main Header */}
-            <header className="bg-white shadow">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center">
+            <header className="bg-white shadow sticky top-0 z-30  w-full">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
+                    <div className="flex items-center justify-between h-16 ">
+                        <div className="flex items-center ">
                             {/* Logo */}
                             <div className="flex-shrink-0 flex items-center">
                                 <img
                                     src="/logo.png"
                                     alt="Logo"
-                                    className="h-10 w-auto"
+                                    className="h-14 w-auto"
                                 />
-                                <span className="ml-2 text-xl font-bold text-gray-900">
+                                <span className="ml-2 text-lg  hidden custom:inline-block font-bold text-gray-900 whitespace-nowrap ">
                                     Barrackpore Police Commissionerate
-                                </span>
+                                </span>{" "}
                             </div>
-
                             {/* Desktop Nav */}
                             <nav className="hidden md:block ml-10">
-                                <div className="flex space-x-10">
+                                <div className="flex space-x-8 lg:space-x-10">
                                     <a
                                         href="/"
-                                        className="text-lg font-medium text-gray-900 hover:text-indigo-700"
+                                        className="text-base lg:text-lg font-medium text-gray-900 hover:text-indigo-700 transition"
                                     >
                                         Home
                                     </a>
                                     <a
                                         href="/service"
-                                        className="text-lg font-medium text-gray-900 hover:text-indigo-700"
+                                        className="text-base lg:text-lg font-medium text-gray-900 hover:text-indigo-700 transition"
                                     >
                                         Services
                                     </a>
                                     <a
                                         href="/contact"
-                                        className="text-lg font-medium text-gray-900 hover:text-indigo-700"
+                                        className="text-base lg:text-lg font-medium text-gray-900 hover:text-indigo-700 transition"
                                     >
                                         Contact
                                     </a>
@@ -78,8 +75,9 @@ const Header = () => {
 
                             {/* Mobile Menu Button */}
                             <button
-                                onClick={() => setSidebarOpen(!sidebarOpen)}
+                                onClick={() => setSidebarOpen(true)}
                                 className="ml-4 md:hidden text-gray-900 focus:outline-none"
+                                aria-label="Open menu"
                             >
                                 <FaBars size={20} />
                             </button>
@@ -87,85 +85,60 @@ const Header = () => {
                     </div>
                 </div>
 
-                {/* Mobile Menu Below Header */}
-                {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-gray-200">
-                        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                            <a
-                                href="/"
-                                className="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
-                            >
-                                Home
-                            </a>
-                            <a
-                                href="/service"
-                                className="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
-                            >
-                                Services
-                            </a>
-                            <a
-                                href="/wanted"
-                                className="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
-                            >
-                                Wanted List
-                            </a>
-                            <a
-                                href="/contact"
-                                className="block px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
-                            >
-                                Contact
-                            </a>
+                {/* Mobile Drawer Sidebar */}
+                {sidebarOpen && (
+                    <div className="fixed inset-0 z-50 flex">
+                        {/* Backdrop */}
+                        {/* <div
+                            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                            onClick={() => setSidebarOpen(false)}
+                        ></div> */}
 
-                            {/* Conditional Login Button */}
-                            {!user && (
-                                <a
-                                    href="/login"
-                                    className="block px-3 py-2 text-base font-medium bg-indigo-600 text-white hover:bg-indigo-700 mt-2"
-                                >
-                                    Login
-                                </a>
-                            )}
-                        </div>
+                        {/* Sidebar Content */}
+                        {/* <aside className="relative z-50 w-64 sm:w-72 bg-gradient-to-br from-indigo-800 to-purple-900 text-white p-6 shadow-xl h-full overflow-y-auto">
+                            <button
+                                onClick={() => setSidebarOpen(false)}
+                                className="absolute top-4 right-4 text-white"
+                                aria-label="Close menu"
+                            >
+                                ✕
+                            </button> */}
+                            <Sidebar role={user?.role} />
+                        {/* </aside> */}
                     </div>
                 )}
             </header>
-
-            {/* Drawer Sidebar */}
-            {sidebarOpen && (
-                <div className="fixed inset-0 z-50 flex">
-                    {/* Backdrop */}
-                    <div
-                        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-                        onClick={() => setSidebarOpen(false)}
-                    ></div>
-
-                    {/* Sidebar Content */}
-                    <aside className="relative z-50 w-64 bg-gradient-to-br from-indigo-800 to-purple-900 text-white p-6 shadow-xl h-full overflow-y-auto">
-                        <button
-                            onClick={() => setSidebarOpen(false)}
-                            className="absolute top-4 right-4 text-white md:hidden"
-                        >
-                            ✕
-                        </button>
-
-                        <Sidebar role={user?.role} />
-                    </aside>
-                </div>
-            )}
         </>
     );
 };
 
 // User Dropdown Component
 const UserDropdown = ({ user, handleLogout }) => {
-    const User=JSON.parse(localStorage.getItem("user"));
-    const id=User._id;
-    console.log("User:", User._id);
-    
+    const User = JSON.parse(localStorage.getItem("user"));
+    const id = User._id;
     const [open, setOpen] = useState(false);
+    const dropdownref = useRef(null);
+    // Handle click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                dropdownref.current &&
+                !dropdownref.current.contains(event.target)
+            ) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     return (
-        <div className="relative ml-6">
+        <div
+            className="settingsdropdown relative ml-4 md:ml-6"
+            ref={dropdownref}
+        >
             {/* Profile Image or Placeholder */}
             {user.photo ? (
                 <img
@@ -185,10 +158,13 @@ const UserDropdown = ({ user, handleLogout }) => {
 
             {/* Dropdown Menu */}
             {open && (
-                <div className="absolute right-0 mt-2 w-52 bg-white rounded-md shadow-lg z-10">
+                <div className="absolute -right-16 top-16 md:-right-0 w-52 bg-white rounded-md shadow-lg z-10 max-h-64 overflow-y-auto ">
                     <div className="py-1">
                         <p className="px-4 py-2 text-sm font-medium text-gray-700 border-b truncate">
-                            Hello! <span className="font-bold text-blue-600">{user.fullName}</span>
+                            Hello!{" "}
+                            <span className="font-bold text-blue-600">
+                                {user.fullName}
+                            </span>
                         </p>
                         <a
                             href="/profile"

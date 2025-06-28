@@ -15,14 +15,14 @@ const AdminDashboard = () => {
     return (
         <div className="flex h-screen bg-gray-100">
             {/* Sidebar */}
-            <Sidebar role="admin" isActiveTab={isActiveTab} handleActiveTab={handleActiveTab} />
+            <Sidebar className="hidden" role="admin" isActiveTab={isActiveTab} handleActiveTab={handleActiveTab} />
 
             {/* Main Content */}
 
             {/* Scrollable Main Area */}
             <main className="flex-1 p-6 overflow-auto bg-gradient-to-br from-gray-50 to-blue-50">
                 {/* Stats Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {[
                         {
                             title: "Total Users",
@@ -43,12 +43,12 @@ const AdminDashboard = () => {
                     ].map((stat, index) => (
                         <div
                             key={index}
-                            className={`rounded-lg shadow-md text-white p-6 ${stat.color}`}
+                            className={`h-[100px] rounded-lg shadow-md text-white p-6 ${stat.color}`}
                         >
-                            <h3 className="text-lg font-medium">
+                            <h3 className="text-[16px] sm:text-lg font-medium">
                                 {stat.title}
                             </h3>
-                            <p className="text-3xl font-bold mt-2">
+                            <p className="sm:text-3xl font-bold mt-2">
                                 {stat.value}
                             </p>
                         </div>
@@ -58,7 +58,7 @@ const AdminDashboard = () => {
                 {/* Dashboard Content */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left Column - User Management */}
-                    <div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                    <div className="order-2 lg:order-1 md:col-span-2 bg-white rounded-xl shadow-md p-6 border border-gray-200">
                         {/* Conditional Rendering Based on isActiveTab */}
                         {isActiveTab === "manageusers" && (
                             <div>
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
                     </div>
 
                     {/* Right Column - Quick Actions */}
-                    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 space-y-6">
+                    <div className="order-1 md:order-2 bg-white rounded-xl shadow-md p-6 border border-gray-200 space-y-6">
                         <h2 className="text-xl font-bold text-gray-800">
                             Quick Actions
                         </h2>
@@ -107,9 +107,7 @@ const AdminDashboard = () => {
                             >
                                 Register New Station
                             </button>
-                            {/* <button className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition duration-200">
-                  View Reports
-                </button> */}
+                            
                         </div>
 
                         {/* Recent Activity */}

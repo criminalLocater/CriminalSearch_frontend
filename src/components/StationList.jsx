@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from "react";
+// StationListPage.jsx
+
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../Api/AxiosInstance";
 import { endpoint } from "../Api/Api";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import ConfirmModal from "../components/ConfirmModal"; // Adjust path as needed
 
 const StationListPage = () => {
     const [stations, setStations] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [stationToDelete, setStationToDelete] = useState(null);
+
     const navigate = useNavigate();
 
     // Fetch all police stations
@@ -15,12 +22,7 @@ const StationListPage = () => {
         const fetchStations = async () => {
             try {
                 const res = await axiosInstance.get(endpoint.station.showall);
-                // if (res.data.success) {
-                console.log(res.data);
-                console.log(res.data.data);
-
                 setStations(res.data.data || []);
-                // }
             } catch (err) {
                 console.error("Failed to load stations:", err);
                 setError("Failed to load police stations.");
@@ -47,26 +49,35 @@ const StationListPage = () => {
                 ?.toLowerCase()
                 .includes(searchTerm.toLowerCase())
     );
-    const handleDelete = async (id) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this station?"
-        );
-        if (!confirmDelete) return;
+
+    // Handle delete action
+    const handleDeleteClick = (id) => {
+        const station = stations.find((s) => s.id === id);
+        setStationToDelete(station);
+        setIsModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!stationToDelete) return;
+
+        const toastId = toast.loading("Deleting station...");
 
         try {
-            await axiosInstance.delete(endpoint.station.delete(id));
-            setStations(stations.filter((station) => station.id !== id));
-            alert("Station deleted successfully.");
+            await axiosInstance.delete(endpoint.station.delete(stationToDelete.id));
+            setStations(stations.filter((s) => s.id !== stationToDelete.id));
+            toast.success("Station deleted successfully!", { id: toastId });
         } catch (err) {
             console.error("Error deleting station:", err);
-            alert("Failed to delete station.");
+            toast.error("Failed to delete station.", { id: toastId });
+        } finally {
+            setIsModalOpen(false);
+            setStationToDelete(null);
         }
     };
+
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6">
-                Police Stations
-            </h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-6">Police Stations</h2>
 
             {/* Search Bar */}
             <div className="mb-6">
@@ -135,18 +146,14 @@ const StationListPage = () => {
                                             </button>
                                             <button
                                                 onClick={() =>
-                                                    navigate(
-                                                        `/edit-station/${station.id}`
-                                                    )
+                                                    navigate(`/edit-station/${station.id}`)
                                                 }
                                                 className="text-yellow-600 hover:text-yellow-900"
                                             >
                                                 Edit
                                             </button>
                                             <button
-                                                onClick={() =>
-                                                    handleDelete(station.id)
-                                                }
+                                                onClick={() => handleDeleteClick(station.id)}
                                                 className="text-red-600 hover:text-red-900"
                                             >
                                                 Delete
@@ -159,6 +166,14 @@ const StationListPage = () => {
                     </div>
                 </div>
             )}
+
+            {/* Confirm Modal */}
+            <ConfirmModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={confirmDelete}
+                message={`Are you sure you want to delete "${stationToDelete?.stationName}"? This action cannot be undone.`}
+            />
         </div>
     );
 };

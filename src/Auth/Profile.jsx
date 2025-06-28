@@ -1,34 +1,29 @@
 import React, { useState } from "react";
 
 const Profile = () => {
-  // Get user from localStorage
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
   const [photo, setPhoto] = useState(null);
 
-  // Load user data from localStorage on mount
   const storedUser = JSON.parse(localStorage.getItem("user")) || {};
   const [user, setUser] = useState(storedUser);
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prev) => ({ ...prev, [name]: value }));
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle photo upload
   const handlePhotoChange = (e) => {
     setPhoto(e.target.files[0]);
   };
 
-  // Handle form submit (update user)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("You must be logged in to update your profile.");
+      toast.error("You must be logged in to update your profile."); // Replaced alert
       return;
     }
 
@@ -41,17 +36,18 @@ const Profile = () => {
         data.append("file", photo);
       }
 
-      // You can now send this data to your backend
-      // Example:
+      // Uncomment when actual API is available
       // await axiosInstance.put(endpoint.auth.UpdateProfile, data, {
       //   headers: { "Content-Type": "multipart/form-data" },
       // });
 
-      // Update localStorage
       localStorage.setItem("user", JSON.stringify(user));
       setEditMode(false);
+
+      toast.success("Profile updated successfully!"); // Success notification
+
     } catch (err) {
-      alert("Failed to update profile.", err.message);
+      toast.error(`Failed to update profile: ${err.message}`); // Replaced alert
     }
   };
 
@@ -60,8 +56,8 @@ const Profile = () => {
       <h1 className="text-3xl font-bold mb-6 text-gray-800">User Profile</h1>
 
       {/* Profile Card */}
-      <div className="w-full bg-white shadow rounded-lg p-6 border-2">
-        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 border-2">
+      <div className="w-full bg-white shadow rounded-lg p-6 ">
+        <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 ">
           {/* Profile Photo */}
           <div className="relative">
             <img
@@ -161,7 +157,7 @@ const Profile = () => {
                 </div>
               </form>
             ) : (
-              <div className="w-full space-y-4 border-2 border-red-500">
+              <div className="w-full space-y-4 ">
                 <div>
                   <p className="text-sm text-gray-500">Full Name</p>
                   <p className="font-semibold">{user.fullName || "Not provided"}</p>

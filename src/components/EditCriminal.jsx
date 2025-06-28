@@ -2,11 +2,16 @@ import React, { useEffect, useState, lazy, Suspense } from "react";
 import axiosInstance from "../Api/AxiosInstance";
 import { endpoint } from "../Api/Api";
 import { useNavigate, useParams } from "react-router-dom";
-const MapPicker= lazy(() => import("../components/MapPicker"))
+import ConfirmModal from "../components/ConfirmModal"; // Adjust path as needed
+import { toast } from "react-hot-toast";
+
+const MapPicker = lazy(() => import("../components/MapPicker"));
 
 const EditCriminalPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -51,6 +56,7 @@ const EditCriminalPage = () => {
       } catch (err) {
         console.error("Error fetching criminal:", err);
         setError("Failed to load criminal data.");
+        toast.error("Failed to load criminal data.");
       }
     };
 
@@ -75,13 +81,18 @@ const EditCriminalPage = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmitClick = (e) => {
     e.preventDefault();
-
     if (!formData.longitude || !formData.latitude) {
-      setError("Please select a valid location on the map.");
+      toast.error("Please select a valid location on the map.");
       return;
     }
+
+    setIsConfirmOpen(true); // Open confirm modal
+  };
+
+  const handleConfirmSubmit = async () => {
+    const toastId = toast.loading("Updating criminal...");
 
     const caseReference = [
       {
@@ -116,18 +127,25 @@ const EditCriminalPage = () => {
         },
       });
 
-      navigate("/criminalpage");
+      toast.success("Criminal updated successfully!", { id: toastId });
+      setTimeout(() => navigate("/criminalpage"), 1000);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update criminal");
+      const errorMsg = err.response?.data?.message || "Failed to update criminal";
+      toast.error(errorMsg, { id: toastId });
+      setError(errorMsg);
+    } finally {
+      setIsConfirmOpen(false);
     }
   };
 
   return (
     <div className="w-full p-6 bg-gray-100 min-h-screen">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Edit Criminal</h2>
+
+      {/* Error shown via toast only */}
       {error && <p className="mb-4 text-red-500">{error}</p>}
 
-      <form onSubmit={handleSubmit} encType="multipart/form-data" className="bg-white p-6 rounded-lg shadow-md space-y-6">
+      <form onSubmit={handleSubmitClick} encType="multipart/form-data" className="bg-white p-6 rounded-lg shadow-md space-y-6">
         {/* Name & Age */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
@@ -267,6 +285,14 @@ const EditCriminalPage = () => {
           </button>
         </div>
       </form>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        onConfirm={handleConfirmSubmit}
+        message="Are you sure you want to update this criminal's information?"
+      />
     </div>
   );
 };

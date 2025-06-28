@@ -5,13 +5,13 @@
 *::after {
   box-sizing: border-box;
 }
-
-
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+@theme {
+  /* --breakpoint-xs: 30rem; */
+  --breakpoint-custom: 34.75rem;
 }
+
+
+
 
 button {
   border-radius: 8px;
