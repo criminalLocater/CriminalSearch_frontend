@@ -11,6 +11,7 @@ const ViewCriminal = () => {
 
   const navigate = useNavigate();
   const { id } = useParams();
+  const user = JSON.parse(localStorage.getItem("user"));
 
   // Fetch criminal by ID
   useEffect(() => {
@@ -43,7 +44,7 @@ const ViewCriminal = () => {
         <h2 className="text-xl font-bold">Error</h2>
         <p>{error}</p>
         <button
-          onClick={() => navigate("/sic/criminalpage")}
+          onClick={() => {user.role === "sic" ? navigate("/sic/criminalpage") : navigate("/officer")}}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Go Back
@@ -58,7 +59,7 @@ const ViewCriminal = () => {
         <h2 className="text-xl font-bold text-gray-800">Criminal Not Found</h2>
         <p className="text-gray-500 mt-2">No criminal found with this ID.</p>
         <button
-          onClick={() => navigate("/sic/criminalpage")}
+          onClick={() => {user.role === "sic" ? navigate("/sic/criminalpage") : navigate("/officer")}}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Go Back
@@ -158,15 +159,18 @@ const ViewCriminal = () => {
               </div>
 
               {/* Action Buttons */}
+              
               <div className="mt-8 flex justify-start gap-4">
+                {user.role === "sic" &&(
                 <button
                   onClick={() => navigate(`/editcriminal/${id}`)}
                   className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition duration-200"
                 >
                   Edit Criminal
                 </button>
+              )}
                 <button
-                  onClick={() => navigate("/sic/criminalpage")}
+                  onClick={() => {user.role === "sic" ? navigate("/sic/criminalpage") : navigate("/officer")}}
                   className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md transition duration-200"
                 >
                   ← Back to List

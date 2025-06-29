@@ -3,6 +3,7 @@ import axiosInstance from "../Api/AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import MapPicker from "../components/MapPicker";
 import { toast } from "react-hot-toast";
+import { endpoint } from "../Api/Api";
 
 const AddPoliceStation = () => {
     const navigate = useNavigate();
@@ -69,7 +70,7 @@ const AddPoliceStation = () => {
         if (!validateForm()) return;
 
         try {
-            await axiosInstance.post("/api/station/create", formData);
+            await axiosInstance.post(endpoint.station.create, formData);
             setSubmitSuccess("Police station added successfully!");
             setSubmitError("");
 

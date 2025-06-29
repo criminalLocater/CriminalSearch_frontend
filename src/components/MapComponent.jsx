@@ -23,15 +23,79 @@ const mapOptions = {
   zoomControl: true,
 };
 
+// 🔁 Map crimeType to icon URL
+const getMarkerIcon = (crimeType) => {
+  const icons = {
+    thief: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png ",
+    assault: "https://maps.google.com/mapfiles/ms/icons/orange-dot.png ",
+    robbery: "https://maps.google.com/mapfiles/ms/icons/green-dot.png ",
+    murder: "https://maps.google.com/mapfiles/ms/icons/red-dot.png ",
+    kidnapper: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png ",
+    fraud: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png ",
+    extortion: "https://maps.google.com/mapfiles/ms/icons/pink-dot.png ",
+    default: "https://maps.google.com/mapfiles/ms/icons/grey-dot.png ",
+  };
+
+  return {
+    url: icons[crimeType.toLowerCase()] || icons.default,
+    scaledSize: new window.google.maps.Size(30, 30),
+  };
+};
+
+
 const MapComponent = ({ selectedCriminal, criminals = [] }) => {
   const [map, setMap] = useState(null);
   const [activeMarker, setActiveMarker] = useState(null);
+  const [markers, setMarkers] = useState([]);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: "AIzaSyC7BsqYETAovxlED4k57RZ7bUSWHF0E0As", // Replace with real key
     libraries: ["places", "maps", "marker"],
   });
+// Load marker clusterer after map load
+  useEffect(() => {
+    if (!map || !isLoaded) return;
+
+    // Create new markers
+    const newMarkers = criminals
+      .filter(c => c.location?.coordinates?.length >= 2)
+      .map((criminal) => {
+        const lat = parseFloat(criminal.location.coordinates[1]);
+        const lng = parseFloat(criminal.location.coordinates[0]);
+
+        if (isNaN(lat) || isNaN(lng)) return null;
+
+        const marker = new window.google.maps.Marker({
+          position: { lat, lng },
+          title: criminal.name,
+          icon: {
+            url: getMarkerIcon(criminal.crimeType),
+            scaledSize: new window.google.maps.Size(30, 30),
+          },
+        });
+
+        marker.addListener("click", () => {
+          setActiveMarker(criminal);
+        });
+
+        return marker;
+      }).filter(Boolean);
+
+    // Initialize MarkerClusterer
+    if (newMarkers.length > 0 && window.MarkerClusterer !== undefined) {
+      const markerCluster = new window.MarkerClusterer({ map });
+      markerCluster.addMarkers(newMarkers);
+      setMarkers(markerCluster);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (markers && markers.clearMarkers) {
+        markers.clearMarkers();
+      }
+    };
+  }, [map, isLoaded, criminals, markers]);
 
   // Pan to selected criminal when clicked
   useEffect(() => {
@@ -67,8 +131,8 @@ const MapComponent = ({ selectedCriminal, criminals = [] }) => {
           position={{ lat, lng }}
           onClick={() => setActiveMarker(criminal)}
           icon={{
-            url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png", 
-            scaledSize: new window.google.maps.Size(30, 30),
+            url: getMarkerIcon(criminal.crimeType).url,
+            scaledSize: getMarkerIcon(criminal.crimeType).scaledSize,
           }}
         >
           {activeMarker?._id === criminal._id && (
@@ -111,8 +175,8 @@ const MapComponent = ({ selectedCriminal, criminals = [] }) => {
           }}
           title={selectedCriminal.name}
           icon={{
-            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", 
-            scaledSize: new window.google.maps.Size(40, 40),
+            url: getMarkerIcon(selectedCriminal.crimeType).url,
+            scaledSize: getMarkerIcon(selectedCriminal.crimeType).scaledSize,
           }}
           onClick={() => setActiveMarker(selectedCriminal)}
         >

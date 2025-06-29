@@ -2,10 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <script src="https://unpkg.com/ @googlemaps/js-api-loader@1.0.2/dist/index.min.js"></script>
+    <script>
+      window.loadMapWithClustering = async () => {
+        const loader = new window.apiLoader.ApiLoader({
+          apiKey: "AIzaSyC7BsqYETAovxlED4k57RZ7bUSWHF0E0As",
+          version: "weekly",
+          libraries: ["places", "marker"],
+        });
+
+        await loader.load();
+
+        // Now MarkerClusterer is available globally
+        console.log("Google Maps & MarkerClusterer loaded");
+      };
+
+      window.loadMapWithClustering();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/logo.png" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>BKPC Criminal Data</title>
   </head>
   <body>
     <div id="root"></div>

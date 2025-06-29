@@ -137,15 +137,8 @@ const AddCriminalPage = () => {
                 </div>
 
                 {/* Crime Type & Address */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input
-                        name="crimeType"
-                        placeholder="Crime Type"
-                        value={formData.crimeType}
-                        onChange={handleChange}
-                        required
-                        className="px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
-                    />
+                
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input
                         name="address"
                         placeholder="Address"
@@ -154,6 +147,18 @@ const AddCriminalPage = () => {
                         required
                         className="px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500"
                     />
+                    <>
+                    <select name="crimeType" value={formData.crimeType} onChange={handleChange} required className="px-4 py-2 border rounded focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select Crime Type</option>
+                        <option value="thief">Theft</option>
+                        <option value="assault">Assault</option>
+                        <option value="robbery">Robbery</option>
+                        <option value="murder">Murder</option>
+                        <option value="kidnapper">Kidnapper</option>
+                        <option value="fraud">Fraud</option>
+                        <option value="extortion">Extortion</option>
+                    </select>
+                    </>
                 </div>
 
                 {/* Case No & Section */}
