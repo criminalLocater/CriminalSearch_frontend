@@ -87,12 +87,18 @@ const MapComponent = ({ selectedCriminal, criminals = [] }) => {
       const markerCluster = new window.MarkerClusterer({ map });
       markerCluster.addMarkers(newMarkers);
       setMarkers(markerCluster);
+    }else if (newMarkers.length > 0) {
+      // Fallback: Add normal markers if clusterer not available
+      newMarkers.forEach((marker) => marker.setMap(map));
+      setMarkers(newMarkers);
     }
 
     // Cleanup on unmount
     return () => {
       if (markers && markers.clearMarkers) {
         markers.clearMarkers();
+      }else if (Array.isArray(markers)) {
+        markers.forEach((m) => m.setMap(null));
       }
     };
   }, [map, isLoaded, criminals, markers]);
