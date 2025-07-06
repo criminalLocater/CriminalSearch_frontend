@@ -86,7 +86,7 @@ const Header = () => {
 
                 {/* Mobile Drawer Sidebar */}
                 {sidebarOpen && (
-                    <div className="fixed inset-0 z-50 flex">
+                    <div className="fixed inset-0 z-20 flex">
                         {/* Backdrop */}
                         {/* <div
                             className="fixed inset-0 bg-black bg-opacity-50 z-40"
@@ -102,7 +102,7 @@ const Header = () => {
                             >
                                 ✕
                             </button> */}
-                            <Sidebar role={user?.role} />
+                            <Sidebar role={user?.role} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
                         {/* </aside> */}
                     </div>
                 )}

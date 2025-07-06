@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 
 
-const Sidebar = ({ role, handleActiveTab, isActiveTab }) => {
-    const [isOpen, setIsOpen] = useState(true);
+const Sidebar = ({ role, handleActiveTab, isActiveTab,setSidebarOpen,sidebarOpen }) => {
+    // const [isOpen, setIsOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
     const currentPath = window.location.pathname;
 
@@ -35,33 +35,33 @@ const Sidebar = ({ role, handleActiveTab, isActiveTab }) => {
         }
 
         // Role-specific links
-        switch (role) {
-            case "admin":
-                baseLinks.push(
-                    { name: "Manage Users", tab: "manageusers" },
-                    { name: "Manage Stations", tab: "managestations" },
-                    { name: "Contact Messages", tab: "contactdashboard" },
-                    { name: "Profile", tab: "profile" },
-                );
-                break;
-            case "sic":
-                baseLinks.push(
-                    { name: "View Criminal", tab: "sic" },
-                    { name: "Manage Criminals", tab: "criminalpage" },
-                    { name: "Profile", tab: "profile" }
-                );
-                break;
-            case "officer":
-                baseLinks.push(
-                    { name: "Criminals Records", tab: "criminalsrecords" },
-                    { name: "Profile", tab: "profile" }
-                );
-                break;
-            default:
-                // Already added Home/Services/Contact above if mobile
-                baseLinks.push({ name: "Login", path: "/login" });
-                break;
-        }
+        // switch (role) {
+        //     case "admin":
+        //         baseLinks.push(
+        //             { name: "Manage Users", tab: "manageusers" },
+        //             { name: "Manage Stations", tab: "managestations" },
+        //             { name: "Contact Messages", tab: "contactdashboard" },
+        //             { name: "Profile", path: "/profile" },
+        //         );
+        //         break;
+        //     case "sic":
+        //         baseLinks.push(
+        //             { name: "View Criminal", tab: "sic" },
+        //             { name: "Manage Criminals", tab: "criminalpage" },
+        //             { name: "Profile", tab: "profile" }
+        //         );
+        //         break;
+        //     case "officer":
+        //         baseLinks.push(
+        //             { name: "Criminals Records", tab: "criminalsrecords" },
+        //             { name: "Profile", tab: "profile" }
+        //         );
+        //         break;
+        //     default:
+        //         // Already added Home/Services/Contact above if mobile
+        //         baseLinks.push({ name: "Login", path: "/login" });
+        //         break;
+        // }
 
         return baseLinks;
     };
@@ -71,8 +71,8 @@ const Sidebar = ({ role, handleActiveTab, isActiveTab }) => {
             {/* Sidebar */}
             <aside
                 className={`${
-                    isOpen ? "translate-x-0" : "-translate-x-full"
-                } fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-br from-indigo-800 to-purple-900 text-white p-6 shadow-xl transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex md:flex-col md:h-full`}
+                    sidebarOpen ? "translate-x-0" : "-translate-x-full"
+                } fixed inset-y-0 left-0  w-64 bg-gradient-to-br from-indigo-800 to-purple-900 text-white p-6 shadow-xl transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex md:flex-col md:h-full`}
             >
                 <div className="flex flex-col h-full">
                     {/* Logo / Title */}
@@ -88,7 +88,7 @@ const Sidebar = ({ role, handleActiveTab, isActiveTab }) => {
 
                         {/* Close Button (mobile only) */}
                         <button
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => setSidebarOpen(false)}
                             className="md:hidden text-white focus:outline-none"
                             aria-label="Close sidebar"
                         >
@@ -114,7 +114,7 @@ const Sidebar = ({ role, handleActiveTab, isActiveTab }) => {
                                     }`}
                                     onClick={(e) => {
                                         if (window.innerWidth < 768) {
-                                            setIsOpen(false); // Close mobile sidebar
+                                            setSidebarOpen(false); // Close mobile sidebar
                                         }
 
                                         if (link.tab) {

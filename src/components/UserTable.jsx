@@ -9,16 +9,28 @@ const UserTable = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(5);
+    const [totalPages, setTotalPages] = useState(1);
+
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
 
-    // Fetch all users
+    // Fetch users with pagination
     const fetchUsers = async () => {
         try {
-            const res = await axiosInstance.get(endpoint.auth.showall);
-            setUsers(res.data.data || []);
+            const res = await axiosInstance.get(endpoint.auth.showall, {
+                params: { page, limit }
+            });
+            console.log("users list ",res.data);
+
+            if (res.data?.data) {
+                setUsers(res.data.data.users || []);
+                
+                setTotalPages(res.data.data.totalPages || 1);
+            }
         } catch (err) {
             setError("Failed to load user data");
             console.error("Error fetching users:", err);
@@ -29,7 +41,7 @@ const UserTable = () => {
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [page, limit]);
 
     // Handle user deletion
     const handleDelete = (user) => {
@@ -37,7 +49,6 @@ const UserTable = () => {
         setIsConfirmOpen(true);
     };
 
-    // Confirm deletion via modal
     const confirmDelete = async () => {
         const toastId = toast.loading("Deleting user...");
         try {
@@ -70,13 +81,11 @@ const UserTable = () => {
         setShowEditModal(true);
     };
 
-    // Handle input changes in modal
     const handleChange = (e) => {
         const { name, value } = e.target;
         setSelectedUser({ ...selectedUser, [name]: value });
     };
 
-    // Handle update
     const handleUpdate = async () => {
         if (!selectedUser || !selectedUser.id) {
             toast.error("Invalid user selected.");
@@ -106,12 +115,10 @@ const UserTable = () => {
             });
 
             const toastId = toast.loading("Updating user...");
-
             await axiosInstance.put(
                 `${endpoint.auth.updateProfile}${selectedUser.id}`,
                 updatePayload
             );
-
             toast.success("User updated successfully!", { id: toastId });
             setShowEditModal(false);
             fetchUsers();
@@ -138,59 +145,109 @@ const UserTable = () => {
         fetchStations();
     }, []);
 
-    if (loading) {
-        return <p className="text-center py-10">Loading users...</p>;
-    }
-
-    if (error) {
-        return <p className="text-red-500 text-center py-10">{error}</p>;
-    }
-
     return (
         <div className="overflow-x-auto">
             {/* Users Table */}
             <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-100">
                     <tr>
-                        <th className="py-3 px-4  text-left">Name</th>
-                        <th className="py-3 px-4  text-left">Email</th>
-                        <th className="py-3 px-4  text-left">Police Station</th>
-                        <th className="py-3 px-4  text-left">Role</th>
-                        <th className="py-3 px-4  text-center">Actions</th>
+                        <th className="py-3 px-4 text-left">Name</th>
+                        <th className="py-3 px-4 text-left">Email</th>
+                        <th className="py-3 px-4 text-left">Police Station</th>
+                        <th className="py-3 px-4 text-left">Role</th>
+                        <th className="py-3 px-4 text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {users.length === 0 && (
+                    {loading ? (
+                        <tr>
+                            <td colSpan="5" className="py-6 text-center text-gray-500 italic">
+                                Loading users...
+                            </td>
+                        </tr>
+                    ) : users.length === 0 ? (
                         <tr>
                             <td colSpan="5" className="py-6 text-center text-gray-500 italic">
                                 No users found.
                             </td>
                         </tr>
+                    ) : (
+                        users.map((user) => (
+                            <tr key={user.id} className="hover:bg-gray-50 transition">
+                                <td className="py-4 px-4">{user.fullName}</td>
+                                <td className="py-4 px-4">{user.email}</td>
+                                <td className="py-4 px-4">{user.stationId || "-"}</td>
+                                <td className="py-4 px-4 capitalize">{user.role}</td>
+                                <td className="py-4 px-4 text-center space-x-2">
+                                    <button
+                                        onClick={() => handleEdit(user)}
+                                        className="text-blue-600 hover:text-blue-800"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(user)}
+                                        className="text-red-600 hover:text-red-800"
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
                     )}
-                    {users.map((user) => (
-                        <tr key={user.id} className="hover:bg-gray-50 transition">
-                            <td className="py-4 px-4 ">{user.fullName}</td>
-                            <td className="py-4 px-4 ">{user.email}</td>
-                            <td className="py-4 px-4 ">{user.stationId || "-"}</td>
-                            <td className="py-4 px-4 capitalize">{user.role}</td>
-                            <td className="py-4 px-4 text-center space-x-2">
-                                <button
-                                    onClick={() => handleEdit(user)}
-                                    className="text-blue-600 hover:text-blue-800"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(user)}
-                                    className="text-red-600 hover:text-red-800"
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
                 </tbody>
             </table>
+
+            {/* Pagination Controls */}
+            {!loading && (
+                <div className="flex justify-between items-center mt-4">
+                    {/* <div>
+                        <label htmlFor="pageSize" className="text-sm text-gray-600 mr-2">
+                            Show:
+                        </label>
+                        <select
+                            id="pageSize"
+                            value={limit}
+                            onChange={(e) => setLimit(Number(e.target.value))}
+                            className="border rounded px-2 py-1 text-sm"
+                        >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                        </select>
+                    </div> */}
+
+                    <div className="flex space-x-2">
+                        <button
+                            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={page === 1}
+                            className={`px-3 py-1 rounded ${
+                                page === 1
+                                    ? "bg-gray-200 cursor-not-allowed"
+                                    : "bg-blue-500 text-white hover:bg-blue-600"
+                            }`}
+                        >
+                            Previous
+                        </button>
+
+                        <span className="px-2 py-1 border rounded">
+                            Page {page} of {totalPages}
+                        </span>
+
+                        <button
+                            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                            disabled={page === totalPages}
+                            className={`px-3 py-1 rounded ${
+                                page === totalPages
+                                    ? "bg-gray-200 cursor-not-allowed"
+                                    : "bg-blue-500 text-white hover:bg-blue-600"
+                            }`}
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Edit Modal */}
             {showEditModal && (

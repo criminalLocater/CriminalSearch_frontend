@@ -130,7 +130,7 @@ const EditCriminalPage = () => {
       });
 
       toast.success("Criminal updated successfully!", { id: toastId });
-      setTimeout(() => navigate("/criminalpage"), 1000);
+      setTimeout(() => navigate(-1), 1000);
     } catch (err) {
       const errorMsg = err.response?.data?.message || "Failed to update criminal";
       toast.error(errorMsg, { id: toastId });
@@ -274,7 +274,7 @@ const EditCriminalPage = () => {
         <div className="flex justify-end gap-3 mt-4">
           <button
             type="button"
-            onClick={() => navigate("/criminalpage")}
+            onClick={() => navigate(-1)}
             className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
           >
             Cancel

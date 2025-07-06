@@ -16,7 +16,7 @@ const Home = () => {
         const fetchCriminals = async () => {
             try {
                 const res = await axiosInstance.get(endpoint.criminal.showall);
-                setCriminals(res.data.data || []);
+                setCriminals(res.data.data.users || []);
             } catch (err) {
                 console.error("Failed to load criminals", err);
             } finally {

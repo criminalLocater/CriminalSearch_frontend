@@ -176,7 +176,7 @@ const EditStationPage = () => {
                 <div className="mt-6 flex justify-end gap-3">
                     <button
                         type="button"
-                        onClick={() => navigate("/stations")}
+                        onClick={() => navigate("/admin")}
                         className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded transition duration-200"
                     >
                         Cancel

@@ -9,17 +9,28 @@ import { Link } from "react-router-dom";
 const CriminalPage = () => {
   const [criminals, setCriminals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [criminalToDeleteId, setCriminalToDeleteId] = useState(null);
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+
   const fetchCriminals = async () => {
+    setLoading(true);
     try {
-      const response = await axiosInstance.get(endpoint.criminal.showall);
-      console.log("Fetched criminals:", response.data.data);
-      
-      setCriminals(response.data.data || []);
+      const response = await axiosInstance.get(endpoint.criminal.showall, {
+        params: { page, limit }
+      });
+
+      if (response.data?.data) {
+        setCriminals(response.data.data.users || []);
+        setTotalPages(response.data.data.totalPages || 1);
+      }
     } catch (err) {
       console.error("Error fetching criminals:", err);
+      setError("Failed to load criminal records.");
     } finally {
       setLoading(false);
     }
@@ -27,22 +38,30 @@ const CriminalPage = () => {
 
   useEffect(() => {
     fetchCriminals();
-  }, []);
+  }, [page, limit]);
 
   const handleDelete = (id) => {
     setCriminalToDeleteId(id);
     setShowModal(true);
   };
 
+  const confirmDelete = async () => {
+    try {
+      const id = criminalToDeleteId;
+      await axiosInstance.delete(endpoint.criminal.delete(id));
+      setCriminals(criminals.filter((c) => c._id !== id));
+    } catch (err) {
+      console.error("Failed to delete criminal", err);
+    } finally {
+      setShowModal(false);
+      setCriminalToDeleteId(null);
+    }
+  };
+
   return (
     <div className="w-full p-6 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-extrabold text-gray-800">Criminal Records</h1>
-        {/* <Link
-          to="/sic/addcriminal"
-          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-5 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
-          + Add Criminal
-        </Link> */}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
@@ -51,6 +70,10 @@ const CriminalPage = () => {
           {/* Table View */}
           {loading ? (
             <div className="animate-pulse flex justify-between space-x-4 p-4 bg-gray-200 h-24 rounded-lg"></div>
+          ) : error ? (
+            <p className="text-red-500">{error}</p>
+          ) : criminals.length === 0 ? (
+            <p className="text-gray-500 italic">No criminal records found.</p>
           ) : (
             <div className="overflow-hidden bg-white rounded-xl shadow-lg">
               <div className="overflow-x-auto">
@@ -131,27 +154,66 @@ const CriminalPage = () => {
             </div>
           )}
 
-          {/* Confirmation Modal */}
-          {showModal && (
-            <ConfirmModal
-              isOpen={showModal}
-              onClose={() => setShowModal(false)}
-              onConfirm={async () => {
-                try {
-                  const id = criminalToDeleteId;
-                  await axiosInstance.delete(endpoint.criminal.delete(id));
-                  setCriminals(criminals.filter((c) => c._id !== id));
-                  setShowModal(false);
-                } catch (err) {
-                  console.error("Failed to delete criminal", err);
-                  setShowModal(false);
-                }
-              }}
-              message="Are you sure you want to delete this criminal?"
-            />
+          {/* Pagination Controls */}
+          {!loading && !error && criminals.length > 0 && (
+            <div className="flex justify-between items-center mt-4">
+              {/* <div>
+                <label htmlFor="pageSize" className="text-sm text-gray-600 mr-2">
+                  Show:
+                </label>
+                <select
+                  id="pageSize"
+                  value={limit}
+                  onChange={(e) => setLimit(Number(e.target.value))}
+                  className="border rounded px-2 py-1 text-sm"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                </select>
+              </div> */}
+
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={page === 1}
+                  className={`px-3 py-1 rounded ${
+                    page === 1
+                      ? "bg-gray-200 cursor-not-allowed"
+                      : "bg-blue-500 text-white hover:bg-blue-600"
+                  }`}
+                >
+                  Previous
+                </button>
+
+                <span className="px-2 py-1 border rounded">
+                  Page {page} of {totalPages}
+                </span>
+
+                <button
+                  onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={page === totalPages}
+                  className={`px-3 py-1 rounded ${
+                    page === totalPages
+                      ? "bg-gray-200 cursor-not-allowed"
+                      : "bg-blue-500 text-white hover:bg-blue-600"
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           )}
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={confirmDelete}
+        message="Are you sure you want to delete this criminal?"
+      />
     </div>
   );
 };
