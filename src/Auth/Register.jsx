@@ -40,7 +40,9 @@ const Register = () => {
                 const response = await axiosInstance.get(
                     endpoint.station.showall
                 );
-                const data = response.data.data;
+                const data = response.data.data.users;
+                console.log("Fetched stations:", data);
+                
                 if (Array.isArray(data)) {
                     setStations(data);
                 } else {

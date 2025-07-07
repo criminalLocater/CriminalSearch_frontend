@@ -19,7 +19,7 @@ const AdminDashboard = () => {
         console.log(tab);
         setIsActiveTab(tab);
     }
-    console.log("sidebarOpen ", sidebarOpen);
+    //console.log("sidebarOpen ", sidebarOpen);
 
     const adminTabs = [
         { name: "Manage Users", tab: "manageusers" },
@@ -31,10 +31,11 @@ const AdminDashboard = () => {
         try {
             const usersres = await axiosInstance.get(endpoint.auth.showall);
             const stationsres = await axiosInstance.get(endpoint.station.showall);
-            console.log("users length ",usersres.data.data.users.length);
-            console.log("stationsres length ",stationsres.data.data.users.length);
-            setUsersNumber(usersres.data.data.users.length)
-            setActiveStation(stationsres.data.data.users.length)
+            //console.log("users length ",usersres.data.data.total);
+            //console.log("stationsres length ",stationsres.data.data.total);
+
+            setUsersNumber(usersres.data.data.total)
+            setActiveStation(stationsres.data.data.total)
         } catch (err) {
             console.error("Error fetching users:", err);
         } 

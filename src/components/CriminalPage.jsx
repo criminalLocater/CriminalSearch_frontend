@@ -157,21 +157,25 @@ const CriminalPage = () => {
           {/* Pagination Controls */}
           {!loading && !error && criminals.length > 0 && (
             <div className="flex justify-between items-center mt-4">
-              {/* <div>
+              <div>
                 <label htmlFor="pageSize" className="text-sm text-gray-600 mr-2">
                   Show:
                 </label>
                 <select
                   id="pageSize"
                   value={limit}
-                  onChange={(e) => setLimit(Number(e.target.value))}
+                  onChange={(e) => {
+                    setLimit(Number(e.target.value));
+                    setPage(1); // Reset to first page when limit changes
+                  }}
                   className="border rounded px-2 py-1 text-sm"
                 >
                   <option value={5}>5</option>
                   <option value={10}>10</option>
                   <option value={20}>20</option>
+                  <option value={50}>50</option>
                 </select>
-              </div> */}
+              </div>
 
               <div className="flex space-x-2">
                 <button

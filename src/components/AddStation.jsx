@@ -75,9 +75,9 @@ const AddPoliceStation = () => {
             setSubmitError("");
 
             setTimeout(() => {
-                toast.success("Police station added Successfull");
+                toast.success("Police station added Successfully");
 
-                navigate("/");
+                navigate("/admin");
             }, 2000);
         } catch (err) {
             const errorMsg =
