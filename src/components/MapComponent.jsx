@@ -70,7 +70,7 @@ const MapComponent = ({ selectedCriminal, criminals = [] }) => {
           position: { lat, lng },
           title: criminal.name,
           icon: {
-            url: getMarkerIcon(criminal.crimeType),
+            url: getMarkerIcon(criminal.crimeType).url,
             scaledSize: new window.google.maps.Size(30, 30),
           },
         });
